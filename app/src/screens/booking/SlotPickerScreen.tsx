@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { useTranslation } from 'react-i18next';
 import { COLORS, RADIUS, SHADOWS, SPACING } from '../../theme';
 import { AppHeader } from '../../components/AppHeader';
 import { AppButton } from '../../components/AppButton';
@@ -21,10 +22,10 @@ interface SlotPickerScreenProps {
 }
 
 const DATES = [
-  { id: 'd-1', label: 'Today', sub: '5 Sep', dateStr: '2026-09-05' },
-  { id: 'd-2', label: 'Tomorrow', sub: '6 Sep', dateStr: '2026-09-06' },
-  { id: 'd-3', label: 'Monday', sub: '7 Sep', dateStr: '2026-09-07' },
-  { id: 'd-4', label: 'Tuesday', sub: '8 Sep', dateStr: '2026-09-08' },
+  { id: 'd-1', labelKey: 'common.today', sub: '5 Sep', dateStr: '2026-09-05' },
+  { id: 'd-2', labelKey: 'common.tomorrow', sub: '6 Sep', dateStr: '2026-09-06' },
+  { id: 'd-3', labelKey: 'common.monday', sub: '7 Sep', dateStr: '2026-09-07' },
+  { id: 'd-4', labelKey: 'common.tuesday', sub: '8 Sep', dateStr: '2026-09-08' },
 ];
 
 export const SlotPickerScreen: React.FC<SlotPickerScreenProps> = ({
@@ -32,6 +33,7 @@ export const SlotPickerScreen: React.FC<SlotPickerScreenProps> = ({
   onSelectSlot,
   onBack,
 }) => {
+  const { t } = useTranslation();
   const { slots } = useAppStore();
   const [selectedDateId, setSelectedDateId] = useState('d-1');
   const [selectedSlotId, setSelectedSlotId] = useState<string | null>(null);
@@ -41,14 +43,14 @@ export const SlotPickerScreen: React.FC<SlotPickerScreenProps> = ({
 
   const handleProceed = () => {
     if (selectedSlot) {
-      onSelectSlot(selectedSlot, selectedDateObj.label);
+      onSelectSlot(selectedSlot, t(selectedDateObj.labelKey as any));
     }
   };
 
   return (
     <View style={styles.container}>
       <AppHeader
-        title="Select Date & Slot"
+        title={t('booking.titleSelect')}
         subtitle={center.name}
         onBack={onBack}
       />
@@ -62,13 +64,16 @@ export const SlotPickerScreen: React.FC<SlotPickerScreenProps> = ({
           <View style={styles.bannerText}>
             <Text style={styles.bannerTitle}>{center.name}</Text>
             <Text style={styles.bannerSubtitle}>
-              Center Code: {center.code} • {center.distanceKm} km away
+              {t('booking.centerCode', {
+                code: center.code,
+                distance: center.distanceKm,
+              })}
             </Text>
           </View>
         </View>
 
         {/* Date Selector Carousel */}
-        <Text style={styles.sectionHeading}>1. Choose Procurement Date</Text>
+        <Text style={styles.sectionHeading}>{t('booking.stepDate')}</Text>
         <ScrollView
           horizontal
           showsHorizontalScrollIndicator={false}
@@ -92,7 +97,7 @@ export const SlotPickerScreen: React.FC<SlotPickerScreenProps> = ({
                     isSelected && styles.dateDayActive,
                   ]}
                 >
-                  {dateItem.label}
+                  {t(dateItem.labelKey as any)}
                 </Text>
                 <Text
                   style={[
@@ -109,9 +114,9 @@ export const SlotPickerScreen: React.FC<SlotPickerScreenProps> = ({
 
         {/* Time Slot Availability List */}
         <View style={styles.slotsHeadingRow}>
-          <Text style={styles.sectionHeading}>2. Available Time Slots</Text>
+          <Text style={styles.sectionHeading}>{t('booking.stepTime')}</Text>
           <Text style={styles.slotsSublabel}>
-            Real-time capacity managed
+            {t('booking.realtimeCapacity')}
           </Text>
         </View>
 
@@ -157,8 +162,11 @@ export const SlotPickerScreen: React.FC<SlotPickerScreenProps> = ({
                     </Text>
                     <Text style={styles.slotCapacityText}>
                       {isFull
-                        ? '0 of 20 slots available'
-                        : `${remaining} of ${slot.capacity} slots left`}
+                        ? t('booking.slotsFull', { capacity: slot.capacity })
+                        : t('booking.slotsAvailable', {
+                            remaining,
+                            capacity: slot.capacity,
+                          })}
                     </Text>
                   </View>
                 </View>
@@ -175,15 +183,15 @@ export const SlotPickerScreen: React.FC<SlotPickerScreenProps> = ({
         <View style={styles.concurrencyNotice}>
           <Ionicons name="shield-checkmark-outline" size={16} color={COLORS.primary} />
           <Text style={styles.concurrencyText}>
-            Concurrency Protected: Exact capacity is verified with database row-lock on booking.
+            {t('booking.concurrencyNotice')}
           </Text>
         </View>
 
         <AppButton
           title={
             selectedSlotId
-              ? 'Proceed to Quantity Entry'
-              : 'Select a Slot to Continue'
+              ? t('booking.proceedToQuantity')
+              : t('booking.selectSlotToContinue')
           }
           onPress={handleProceed}
           disabled={!selectedSlotId}

@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { useTranslation } from 'react-i18next';
 import { COLORS, RADIUS, SHADOWS, SPACING } from '../../theme';
 import { AppHeader } from '../../components/AppHeader';
 import { useAppStore } from '../../state/useAppStore';
@@ -21,6 +22,7 @@ export const NotificationsScreen: React.FC<NotificationsScreenProps> = ({
   onBack,
   onSelectNotification,
 }) => {
+  const { t } = useTranslation();
   const { notifications, markNotificationRead, clearAllNotifications } =
     useAppStore();
 
@@ -41,13 +43,13 @@ export const NotificationsScreen: React.FC<NotificationsScreenProps> = ({
   return (
     <View style={styles.container}>
       <AppHeader
-        title="Mandi Alerts"
-        subtitle="Live Queue & Lifecycle Notifications"
+        title={t('notifications.title')}
+        subtitle={t('notifications.subtitle')}
         onBack={onBack}
         rightAction={
           notifications.length > 0 ? (
             <TouchableOpacity onPress={clearAllNotifications}>
-              <Text style={styles.clearText}>Clear</Text>
+              <Text style={styles.clearText}>{t('notifications.clearText')}</Text>
             </TouchableOpacity>
           ) : undefined
         }
@@ -64,9 +66,9 @@ export const NotificationsScreen: React.FC<NotificationsScreenProps> = ({
               size={54}
               color={COLORS.textMuted}
             />
-            <Text style={styles.emptyTitle}>No Alerts Yet</Text>
+            <Text style={styles.emptyTitle}>{t('notifications.emptyTitle')}</Text>
             <Text style={styles.emptySubtitle}>
-              You will receive real-time notifications when your token is called or status updates.
+              {t('notifications.emptySubtitle')}
             </Text>
           </View>
         }

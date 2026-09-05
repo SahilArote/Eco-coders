@@ -10,6 +10,7 @@ import {
 import QRCode from 'react-native-qrcode-svg';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
+import { useTranslation } from 'react-i18next';
 import { COLORS, RADIUS, SHADOWS, SPACING } from '../../theme';
 import { AppHeader } from '../../components/AppHeader';
 import { AppButton } from '../../components/AppButton';
@@ -27,17 +28,18 @@ export const TokenPassScreen: React.FC<TokenPassScreenProps> = ({
   onViewProcurement,
   onBack,
 }) => {
+  const { t } = useTranslation();
   const { activeBooking, farmer } = useAppStore();
 
   if (!activeBooking) {
     return (
       <View style={styles.container}>
-        <AppHeader title="Digital Token" onBack={onBack} />
+        <AppHeader title={t('token.title')} onBack={onBack} />
         <View style={styles.emptyState}>
           <Ionicons name="ticket-outline" size={64} color={COLORS.textMuted} />
-          <Text style={styles.emptyTitle}>No Active Booking Found</Text>
+          <Text style={styles.emptyTitle}>{t('token.noActiveTitle')}</Text>
           <Text style={styles.emptySubtitle}>
-            Please select a procurement center and book a slot to receive your token.
+            {t('token.noActiveSubtitle')}
           </Text>
         </View>
       </View>
@@ -47,7 +49,13 @@ export const TokenPassScreen: React.FC<TokenPassScreenProps> = ({
   const handleShare = async () => {
     try {
       await Share.share({
-        message: `Kisan e-Setu Token Pass: ${activeBooking.tokenNumber}\nCenter: ${activeBooking.centerName}\nCrop: ${activeBooking.cropName}\nSlot: ${activeBooking.slotDate}, ${activeBooking.slotTimeRange}\nFarmer: ${farmer.fullName}`,
+        message: t('token.shareMessage', {
+          token: activeBooking.tokenNumber,
+          center: activeBooking.centerName,
+          crop: activeBooking.cropName,
+          slot: `${activeBooking.slotDate}, ${activeBooking.slotTimeRange}`,
+          farmer: farmer.fullName,
+        }),
       });
     } catch (e) {
       // ignore
@@ -57,8 +65,8 @@ export const TokenPassScreen: React.FC<TokenPassScreenProps> = ({
   return (
     <View style={styles.container}>
       <AppHeader
-        title="Digital Token Pass"
-        subtitle="Present at Mandi Entry Gate"
+        title={t('token.title')}
+        subtitle={t('token.subtitle')}
         onBack={onBack}
         rightAction={
           <TouchableOpacity onPress={handleShare} style={styles.shareIconBtn}>
@@ -72,7 +80,7 @@ export const TokenPassScreen: React.FC<TokenPassScreenProps> = ({
         <View style={styles.offlineNotice}>
           <Ionicons name="cloud-offline-outline" size={16} color={COLORS.primaryDark} />
           <Text style={styles.offlineText}>
-            Cached Locally: Available even if network drops at the Mandi.
+            {t('token.offlineNotice')}
           </Text>
         </View>
 
@@ -88,11 +96,11 @@ export const TokenPassScreen: React.FC<TokenPassScreenProps> = ({
             <View style={styles.passHeaderTop}>
               <View style={styles.badgeWrap}>
                 <Ionicons name="shield-checkmark" size={12} color={COLORS.accent} />
-                <Text style={styles.badgeText}>OFFICIAL TOKEN</Text>
+                <Text style={styles.badgeText}>{t('token.officialTokenBadge')}</Text>
               </View>
               <StatusBadge status={activeBooking.status} size="sm" />
             </View>
-            <Text style={styles.tokenLabel}>Digital Queue Token</Text>
+            <Text style={styles.tokenLabel}>{t('token.tokenLabel')}</Text>
             <Text style={styles.tokenNumber}>{activeBooking.tokenNumber}</Text>
           </LinearGradient>
 
@@ -107,22 +115,22 @@ export const TokenPassScreen: React.FC<TokenPassScreenProps> = ({
           <View style={styles.passBody}>
             <View style={styles.gridRow}>
               <View style={styles.gridCol}>
-                <Text style={styles.fieldLabel}>Farmer</Text>
+                <Text style={styles.fieldLabel}>{t('token.farmerName')}</Text>
                 <Text style={styles.fieldValue}>{farmer.fullName}</Text>
               </View>
               <View style={styles.gridColRight}>
-                <Text style={styles.fieldLabel}>Registered Crop</Text>
+                <Text style={styles.fieldLabel}>{t('token.produceCrop')}</Text>
                 <Text style={styles.fieldValue}>{activeBooking.cropName}</Text>
               </View>
             </View>
 
             <View style={styles.gridRow}>
               <View style={styles.gridCol}>
-                <Text style={styles.fieldLabel}>Procurement Center</Text>
+                <Text style={styles.fieldLabel}>{t('token.procurementCenter')}</Text>
                 <Text style={styles.fieldValue}>{activeBooking.centerName}</Text>
               </View>
               <View style={styles.gridColRight}>
-                <Text style={styles.fieldLabel}>Slot Window</Text>
+                <Text style={styles.fieldLabel}>{t('token.scheduledSlot')}</Text>
                 <Text style={styles.fieldValueHighlight}>
                   {activeBooking.slotDate} • {activeBooking.slotTimeRange}
                 </Text>
@@ -131,14 +139,14 @@ export const TokenPassScreen: React.FC<TokenPassScreenProps> = ({
 
             <View style={styles.gridRow}>
               <View style={styles.gridCol}>
-                <Text style={styles.fieldLabel}>Estimated Quantity</Text>
+                <Text style={styles.fieldLabel}>{t('token.quantity')}</Text>
                 <Text style={styles.fieldValue}>
-                  {activeBooking.estimatedQuantityQuintals} Quintals
+                  {activeBooking.estimatedQuantityQuintals} {t('common.quintals')}
                 </Text>
               </View>
               <View style={styles.gridColRight}>
-                <Text style={styles.fieldLabel}>Check-in Station</Text>
-                <Text style={styles.fieldValue}>Gate #2 (Weighbridge A)</Text>
+                <Text style={styles.fieldLabel}>{t('token.checkInStation')}</Text>
+                <Text style={styles.fieldValue}>{t('token.stationValue')}</Text>
               </View>
             </View>
 
@@ -153,7 +161,7 @@ export const TokenPassScreen: React.FC<TokenPassScreenProps> = ({
                 />
               </View>
               <Text style={styles.qrHint}>
-                Scan QR at Mandi Entry Gate to confirm physical arrival
+                {t('token.qrScanHint')}
               </Text>
             </View>
           </View>
@@ -162,14 +170,14 @@ export const TokenPassScreen: React.FC<TokenPassScreenProps> = ({
         {/* Action Buttons */}
         <View style={styles.actionGroup}>
           <AppButton
-            title="Track in Live Queue Radar"
+            title={t('token.trackRadarBtn')}
             onPress={onTrackQueue}
             size="lg"
             icon={<Ionicons name="pulse-outline" size={20} color={COLORS.textInverse} />}
           />
 
           <AppButton
-            title="View Full Procurement Inspection Slip"
+            title={t('token.viewSlipBtn')}
             onPress={onViewProcurement}
             variant="outline"
             size="md"

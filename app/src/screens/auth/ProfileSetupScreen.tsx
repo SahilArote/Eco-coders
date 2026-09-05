@@ -8,6 +8,7 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { useTranslation } from 'react-i18next';
 import { COLORS, RADIUS, SHADOWS, SPACING } from '../../theme';
 import { AppHeader } from '../../components/AppHeader';
 import { AppButton } from '../../components/AppButton';
@@ -32,6 +33,7 @@ export const ProfileSetupScreen: React.FC<ProfileSetupScreenProps> = ({
   onBack,
   onSave,
 }) => {
+  const { t } = useTranslation();
   const { farmer, updateFarmerProfile } = useAppStore();
 
   const [fullName, setFullName] = useState(farmer.fullName);
@@ -64,8 +66,8 @@ export const ProfileSetupScreen: React.FC<ProfileSetupScreenProps> = ({
   return (
     <View style={styles.container}>
       <AppHeader
-        title="Farmer Profile"
-        subtitle="Government Registered Identity"
+        title={t('auth.profileSetupTitle')}
+        subtitle={t('auth.profileSetupSubtitle')}
         onBack={onBack}
       />
       <ScrollView contentContainerStyle={styles.scrollContent}>
@@ -75,28 +77,28 @@ export const ProfileSetupScreen: React.FC<ProfileSetupScreenProps> = ({
             <Ionicons name="checkmark-circle" size={24} color={COLORS.primary} />
           </View>
           <View style={styles.verifiedTextGroup}>
-            <Text style={styles.verifiedTitle}>Aadhaar e-KYC Verified</Text>
+            <Text style={styles.verifiedTitle}>{t('auth.aadhaarVerified')}</Text>
             <Text style={styles.verifiedSubtitle}>
-              Linked to Phone: {farmer.phone}
+              {t('auth.linkedPhone', { phone: farmer.phone })}
             </Text>
           </View>
         </View>
 
         {/* Profile Inputs */}
         <View style={styles.section}>
-          <Text style={styles.label}>Full Name (As per Land Records / 7/12)</Text>
+          <Text style={styles.label}>{t('auth.fullNameLabel')}</Text>
           <TextInput
             style={styles.input}
             value={fullName}
             onChangeText={setFullName}
-            placeholder="Enter farmer full name"
+            placeholder={t('auth.fullNamePlaceholder')}
             placeholderTextColor={COLORS.textMuted}
           />
         </View>
 
         <View style={styles.row}>
           <View style={[styles.section, { flex: 1, marginRight: SPACING.md }]}>
-            <Text style={styles.label}>Village / Gaon</Text>
+            <Text style={styles.label}>{t('auth.villageLabel')}</Text>
             <TextInput
               style={styles.input}
               value={village}
@@ -107,7 +109,7 @@ export const ProfileSetupScreen: React.FC<ProfileSetupScreenProps> = ({
           </View>
 
           <View style={[styles.section, { flex: 1 }]}>
-            <Text style={styles.label}>District</Text>
+            <Text style={styles.label}>{t('auth.districtLabel')}</Text>
             <TextInput
               style={styles.input}
               value={district}
@@ -119,7 +121,7 @@ export const ProfileSetupScreen: React.FC<ProfileSetupScreenProps> = ({
         </View>
 
         <View style={styles.section}>
-          <Text style={styles.label}>Total Cultivable Land (Acres)</Text>
+          <Text style={styles.label}>{t('auth.landSizeLabel')}</Text>
           <View style={styles.landInputWrapper}>
             <TextInput
               style={[styles.input, { flex: 1 }]}
@@ -130,16 +132,16 @@ export const ProfileSetupScreen: React.FC<ProfileSetupScreenProps> = ({
               placeholderTextColor={COLORS.textMuted}
             />
             <View style={styles.unitPill}>
-              <Text style={styles.unitText}>Acres</Text>
+              <Text style={styles.unitText}>{t('common.acres')}</Text>
             </View>
           </View>
         </View>
 
         {/* Crop Selection */}
         <View style={styles.section}>
-          <Text style={styles.label}>Registered Crops for Procurement</Text>
+          <Text style={styles.label}>{t('auth.registeredCropsLabel')}</Text>
           <Text style={styles.helperText}>
-            Select crops you intend to sell at government MSP this season
+            {t('auth.selectCropsHelper')}
           </Text>
           <View style={styles.cropsWrap}>
             {AVAILABLE_CROPS.map((crop) => {
@@ -175,7 +177,7 @@ export const ProfileSetupScreen: React.FC<ProfileSetupScreenProps> = ({
         </View>
 
         <AppButton
-          title="Save & Continue to Dashboard"
+          title={t('auth.saveProfileBtn')}
           onPress={handleSave}
           size="lg"
           style={styles.saveBtn}

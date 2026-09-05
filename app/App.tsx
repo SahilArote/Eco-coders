@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -10,11 +10,14 @@ import {
 } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
+import { useTranslation } from 'react-i18next';
+import './src/i18n';
 import { COLORS, RADIUS, SHADOWS, SPACING } from './src/theme';
 import { useAppStore } from './src/state/useAppStore';
 import { ProcurementCenter, TimeSlot } from './src/types';
 
 // Screens
+import { SplashScreen } from './src/screens/splash/SplashScreen';
 import { LoginScreen } from './src/screens/auth/LoginScreen';
 import { ProfileSetupScreen } from './src/screens/auth/ProfileSetupScreen';
 import { HomeScreen } from './src/screens/home/HomeScreen';
@@ -42,7 +45,7 @@ type ModalScreen =
   | 'EDIT_PROFILE';
 
 export default function App() {
-  const [isAuthenticated, setIsAuthenticated] = useState(true); // Default true for instant demo
+  const [isInitializing, setIsInitializing] = useState(true);
   const [activeTab, setActiveTab] = useState<Tab>('HOME');
   const [modalScreen, setModalScreen] = useState<ModalScreen>(null);
 
@@ -53,15 +56,38 @@ export default function App() {
   const [selectedSlot, setSelectedSlot] = useState<TimeSlot | null>(null);
   const [selectedDateStr, setSelectedDateStr] = useState<string>('Today');
 
-  const { centers, activeBooking, notifications } = useAppStore();
+  const { t } = useTranslation();
+  const {
+    isAuthenticated,
+    login,
+    logout,
+    centers,
+    activeBooking,
+    notifications,
+    initLanguage,
+  } = useAppStore();
   const unreadCount = notifications.filter((n) => !n.isRead).length;
 
+  useEffect(() => {
+    initLanguage();
+  }, []);
+
+  // 1. App Startup: Branded Animated Splash / Loading Experience
+  if (isInitializing) {
+    return (
+      <SafeAreaProvider style={{ flex: 1, backgroundColor: '#022c22' }}>
+        <SplashScreen onFinish={() => setIsInitializing(false)} />
+      </SafeAreaProvider>
+    );
+  }
+
+  // 2. Authentication-First Guard: First screen after splash is ALWAYS Login for unauthenticated users
   if (!isAuthenticated) {
     return (
       <SafeAreaProvider>
         <SafeAreaView style={styles.safeArea}>
           <StatusBar barStyle="dark-content" backgroundColor={COLORS.background} />
-          <LoginScreen onLoginSuccess={() => setIsAuthenticated(true)} />
+          <LoginScreen onLoginSuccess={login} />
         </SafeAreaView>
       </SafeAreaProvider>
     );
@@ -212,7 +238,7 @@ export default function App() {
           <ProfileScreen
             onEditProfile={() => setModalScreen('EDIT_PROFILE')}
             onOpenGrievance={() => setModalScreen('FEEDBACK')}
-            onLogout={() => setIsAuthenticated(false)}
+            onLogout={logout}
           />
         );
     }
@@ -247,7 +273,7 @@ export default function App() {
                   activeTab === 'HOME' && styles.tabLabelActive,
                 ]}
               >
-                Home
+                {t('tabs.home')}
               </Text>
             </TouchableOpacity>
 
@@ -267,7 +293,7 @@ export default function App() {
                   activeTab === 'CENTERS' && styles.tabLabelActive,
                 ]}
               >
-                Centers
+                {t('tabs.centers')}
               </Text>
             </TouchableOpacity>
 
@@ -292,7 +318,7 @@ export default function App() {
                   activeTab === 'QUEUE' && styles.tabLabelActiveAmber,
                 ]}
               >
-                Live Queue
+                {t('tabs.queue')}
               </Text>
             </TouchableOpacity>
 
@@ -312,7 +338,7 @@ export default function App() {
                   activeTab === 'PROFILE' && styles.tabLabelActive,
                 ]}
               >
-                Profile
+                {t('tabs.profile')}
               </Text>
             </TouchableOpacity>
           </View>

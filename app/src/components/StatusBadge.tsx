@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import { COLORS, RADIUS, SPACING } from '../theme';
 import { ProcurementStatus } from '../types';
 
@@ -9,7 +10,10 @@ interface StatusBadgeProps {
 }
 
 export const StatusBadge: React.FC<StatusBadgeProps> = ({ status, size = 'sm' }) => {
+  const { t } = useTranslation();
+
   const getBadgeConfig = () => {
+    const label = t('status.' + status.toLowerCase(), { defaultValue: status.replace('_', ' ') });
     switch (status) {
       case 'PAYMENT_COMPLETED':
       case 'ACCEPTED':
@@ -18,7 +22,7 @@ export const StatusBadge: React.FC<StatusBadgeProps> = ({ status, size = 'sm' })
         return {
           bg: COLORS.primarySurface,
           text: COLORS.primaryDark,
-          label: status.replace('_', ' '),
+          label,
           dot: COLORS.primary,
         };
       case 'PROCESSING':

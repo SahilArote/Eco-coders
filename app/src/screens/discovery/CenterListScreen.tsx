@@ -8,6 +8,7 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { useTranslation } from 'react-i18next';
 import { COLORS, RADIUS, SHADOWS, SPACING } from '../../theme';
 import { AppHeader } from '../../components/AppHeader';
 import { StatusBadge } from '../../components/StatusBadge';
@@ -23,6 +24,7 @@ export const CenterListScreen: React.FC<CenterListScreenProps> = ({
   onSelectCenter,
   onBack,
 }) => {
+  const { t } = useTranslation();
   const { centers, crops } = useAppStore();
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCropFilter, setSelectedCropFilter] = useState<string>('ALL');
@@ -43,8 +45,8 @@ export const CenterListScreen: React.FC<CenterListScreenProps> = ({
   return (
     <View style={styles.container}>
       <AppHeader
-        title="Procurement Centers"
-        subtitle="Nashik District • Government Mandis"
+        title={t('discovery.title')}
+        subtitle={t('discovery.subtitle')}
         onBack={onBack}
       />
 
@@ -54,7 +56,7 @@ export const CenterListScreen: React.FC<CenterListScreenProps> = ({
           <Ionicons name="search" size={18} color={COLORS.textMuted} />
           <TextInput
             style={styles.searchInput}
-            placeholder="Search by Mandi, Taluka, or Village..."
+            placeholder={t('discovery.searchPlaceholder')}
             placeholderTextColor={COLORS.textMuted}
             value={searchQuery}
             onChangeText={setSearchQuery}
@@ -81,7 +83,7 @@ export const CenterListScreen: React.FC<CenterListScreenProps> = ({
                 selectedCropFilter === 'ALL' && styles.filterTextActive,
               ]}
             >
-              All Crops
+              {t('discovery.allCrops')}
             </Text>
           </TouchableOpacity>
           {crops.map((crop) => (
@@ -130,12 +132,17 @@ export const CenterListScreen: React.FC<CenterListScreenProps> = ({
             <View style={styles.metaRow}>
               <View style={styles.metaItem}>
                 <Ionicons name="location-outline" size={14} color={COLORS.primary} />
-                <Text style={styles.metaText}>{item.distanceKm} km away</Text>
+                <Text style={styles.metaText}>
+                  {t('discovery.distanceAway', { distance: item.distanceKm })}
+                </Text>
               </View>
               <View style={styles.metaItem}>
                 <Ionicons name="speedometer-outline" size={14} color={COLORS.accentDark} />
                 <Text style={styles.metaText}>
-                  {item.activeCounters} of {item.totalCounters} counters active
+                  {t('discovery.countersStatus', {
+                    active: item.activeCounters,
+                    total: item.totalCounters,
+                  })}
                 </Text>
               </View>
             </View>
@@ -155,13 +162,13 @@ export const CenterListScreen: React.FC<CenterListScreenProps> = ({
 
             <View style={styles.cardFooter}>
               <View style={styles.capacityBox}>
-                <Text style={styles.capacityLabel}>Daily Capacity</Text>
+                <Text style={styles.capacityLabel}>{t('home.dailyCapacity')}</Text>
                 <Text style={styles.capacityValue}>
-                  {item.dailyCapacityQuintals} Qtl/day
+                  {t('discovery.dailyCapacityQtl', { count: item.dailyCapacityQuintals })}
                 </Text>
               </View>
               <View style={styles.actionBtn}>
-                <Text style={styles.actionBtnText}>Book Slot</Text>
+                <Text style={styles.actionBtnText}>{t('discovery.bookSlot')}</Text>
                 <Ionicons name="arrow-forward" size={14} color={COLORS.textInverse} />
               </View>
             </View>

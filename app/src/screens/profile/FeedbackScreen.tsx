@@ -6,9 +6,9 @@ import {
   ScrollView,
   TextInput,
   TouchableOpacity,
-  Alert,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { useTranslation } from 'react-i18next';
 import { COLORS, RADIUS, SHADOWS, SPACING } from '../../theme';
 import { AppHeader } from '../../components/AppHeader';
 import { AppButton } from '../../components/AppButton';
@@ -20,23 +20,25 @@ interface FeedbackScreenProps {
 }
 
 const CATEGORIES = [
-  'Waiting Time Delay',
-  'Weighbridge Discrepancy',
-  'Moisture Lab Test Dispute',
-  'Payment Delay',
-  'Staff Behavior',
-  'General Suggestion',
+  { id: 'delay', labelKey: 'feedback.catDelay' },
+  { id: 'weighbridge', labelKey: 'feedback.catWeighbridge' },
+  { id: 'moisture', labelKey: 'feedback.catMoisture' },
+  { id: 'payment', labelKey: 'feedback.catPayment' },
+  { id: 'staff', labelKey: 'feedback.catStaff' },
+  { id: 'general', labelKey: 'feedback.catGeneral' },
 ];
 
 export const FeedbackScreen: React.FC<FeedbackScreenProps> = ({
   onBack,
   onSubmitDone,
 }) => {
+  const { t } = useTranslation();
   const { activeBooking } = useAppStore();
-  const [selectedCategory, setSelectedCategory] = useState(CATEGORIES[0]);
+  const [selectedCategoryId, setSelectedCategoryId] = useState(CATEGORIES[0].id);
   const [rating, setRating] = useState(5);
   const [comments, setComments] = useState('');
   const [submitted, setSubmitted] = useState(false);
+  const [ticketNum] = useState(() => Math.floor(100000 + Math.random() * 900000));
 
   const handleSubmit = () => {
     setSubmitted(true);
@@ -48,8 +50,8 @@ export const FeedbackScreen: React.FC<FeedbackScreenProps> = ({
   return (
     <View style={styles.container}>
       <AppHeader
-        title="Grievance & Feedback"
-        subtitle="Department of Consumer Affairs"
+        title={t('feedback.title')}
+        subtitle={t('feedback.subtitle')}
         onBack={onBack}
       />
 
@@ -57,12 +59,12 @@ export const FeedbackScreen: React.FC<FeedbackScreenProps> = ({
         {submitted ? (
           <View style={styles.successBox}>
             <Ionicons name="checkmark-circle" size={64} color={COLORS.primary} />
-            <Text style={styles.successTitle}>Grievance Logged Successfully</Text>
+            <Text style={styles.successTitle}>{t('feedback.successTitle')}</Text>
             <Text style={styles.successSubtitle}>
-              Reference Ticket: GRV-{Math.floor(100000 + Math.random() * 900000)}
+              {t('feedback.refTicket', { ticket: `GRV-${ticketNum}` })}
             </Text>
             <Text style={styles.successNote}>
-              Your feedback has been routed to the District Mandi Inspector.
+              {t('feedback.successNote')}
             </Text>
           </View>
         ) : (
@@ -72,7 +74,7 @@ export const FeedbackScreen: React.FC<FeedbackScreenProps> = ({
               <View style={styles.linkedBookingCard}>
                 <Ionicons name="link-outline" size={18} color={COLORS.primary} />
                 <View style={styles.linkedInfo}>
-                  <Text style={styles.linkedLabel}>Linked Procurement</Text>
+                  <Text style={styles.linkedLabel}>{t('feedback.linkedProcurement')}</Text>
                   <Text style={styles.linkedTitle}>
                     Token {activeBooking.tokenNumber} • {activeBooking.centerName}
                   </Text>
@@ -82,24 +84,24 @@ export const FeedbackScreen: React.FC<FeedbackScreenProps> = ({
 
             {/* Category Selector */}
             <View style={styles.section}>
-              <Text style={styles.sectionTitle}>1. Select Grievance Category</Text>
+              <Text style={styles.sectionTitle}>{t('feedback.stepCategory')}</Text>
               <View style={styles.catWrap}>
                 {CATEGORIES.map((cat) => (
                   <TouchableOpacity
-                    key={cat}
+                    key={cat.id}
                     style={[
                       styles.catPill,
-                      selectedCategory === cat && styles.catPillActive,
+                      selectedCategoryId === cat.id && styles.catPillActive,
                     ]}
-                    onPress={() => setSelectedCategory(cat)}
+                    onPress={() => setSelectedCategoryId(cat.id)}
                   >
                     <Text
                       style={[
                         styles.catText,
-                        selectedCategory === cat && styles.catTextActive,
+                        selectedCategoryId === cat.id && styles.catTextActive,
                       ]}
                     >
-                      {cat}
+                      {t(cat.labelKey as any)}
                     </Text>
                   </TouchableOpacity>
                 ))}
@@ -108,7 +110,7 @@ export const FeedbackScreen: React.FC<FeedbackScreenProps> = ({
 
             {/* Star Rating */}
             <View style={styles.section}>
-              <Text style={styles.sectionTitle}>2. Mandi Experience Rating</Text>
+              <Text style={styles.sectionTitle}>{t('feedback.stepRating')}</Text>
               <View style={styles.starsRow}>
                 {[1, 2, 3, 4, 5].map((star) => (
                   <TouchableOpacity
@@ -128,12 +130,12 @@ export const FeedbackScreen: React.FC<FeedbackScreenProps> = ({
 
             {/* Comments Input */}
             <View style={styles.section}>
-              <Text style={styles.sectionTitle}>3. Detailed Remarks</Text>
+              <Text style={styles.sectionTitle}>{t('feedback.stepComments')}</Text>
               <TextInput
                 style={styles.textArea}
                 multiline
                 numberOfLines={4}
-                placeholder="Describe your issue or suggestion in detail..."
+                placeholder={t('feedback.placeholderComments')}
                 placeholderTextColor={COLORS.textMuted}
                 value={comments}
                 onChangeText={setComments}
@@ -141,7 +143,7 @@ export const FeedbackScreen: React.FC<FeedbackScreenProps> = ({
             </View>
 
             <AppButton
-              title="Submit Official Feedback"
+              title={t('feedback.submitBtn')}
               onPress={handleSubmit}
               size="lg"
               style={styles.submitBtn}

@@ -8,6 +8,7 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { useTranslation } from 'react-i18next';
 import { COLORS, RADIUS, SHADOWS, SPACING } from '../../theme';
 import { AppHeader } from '../../components/AppHeader';
 import { AppButton } from '../../components/AppButton';
@@ -22,6 +23,12 @@ interface BookingConfirmScreenProps {
   onBack: () => void;
 }
 
+const VEHICLES = [
+  { id: 'tractor', labelKey: 'booking.vehicleTractor' },
+  { id: 'truck', labelKey: 'booking.vehicleTruck' },
+  { id: 'cart', labelKey: 'booking.vehicleCart' },
+];
+
 export const BookingConfirmScreen: React.FC<BookingConfirmScreenProps> = ({
   center,
   slot,
@@ -29,13 +36,14 @@ export const BookingConfirmScreen: React.FC<BookingConfirmScreenProps> = ({
   onBookingSuccess,
   onBack,
 }) => {
+  const { t } = useTranslation();
   const { crops, farmer, bookSlot } = useAppStore();
 
   const [selectedCropId, setSelectedCropId] = useState(
     center.acceptedCropIds[0] || crops[0].id
   );
   const [quantity, setQuantity] = useState('40'); // Default 40 Quintals (~4 tonnes)
-  const [vehicleType, setVehicleType] = useState('Tractor Trolley');
+  const [selectedVehicleId, setSelectedVehicleId] = useState('tractor');
   const [loading, setLoading] = useState(false);
 
   const selectedCrop =
@@ -62,8 +70,8 @@ export const BookingConfirmScreen: React.FC<BookingConfirmScreenProps> = ({
   return (
     <View style={styles.container}>
       <AppHeader
-        title="Confirm Booking"
-        subtitle="Review Produce & Slot Details"
+        title={t('booking.titleConfirm')}
+        subtitle={t('booking.subtitleConfirm')}
         onBack={onBack}
       />
 
@@ -72,11 +80,11 @@ export const BookingConfirmScreen: React.FC<BookingConfirmScreenProps> = ({
         <View style={styles.summaryCard}>
           <View style={styles.summaryRow}>
             <View style={styles.summaryCol}>
-              <Text style={styles.summaryLabel}>Center</Text>
+              <Text style={styles.summaryLabel}>{t('booking.summaryCenter')}</Text>
               <Text style={styles.summaryValue}>{center.name}</Text>
             </View>
             <View style={styles.summaryColRight}>
-              <Text style={styles.summaryLabel}>Slot Window</Text>
+              <Text style={styles.summaryLabel}>{t('booking.summarySlotWindow')}</Text>
               <Text style={styles.summaryValueHighlight}>
                 {dateStr}, {slot.startTime}
               </Text>
@@ -86,7 +94,7 @@ export const BookingConfirmScreen: React.FC<BookingConfirmScreenProps> = ({
 
         {/* Crop Selection */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>1. Select Crop to Sell</Text>
+          <Text style={styles.sectionTitle}>{t('booking.stepCrop')}</Text>
           <View style={styles.cropList}>
             {center.acceptedCropIds.map((cropId) => {
               const cropObj = crops.find((c) => c.id === cropId);
@@ -115,7 +123,9 @@ export const BookingConfirmScreen: React.FC<BookingConfirmScreenProps> = ({
                   <View style={styles.cropInfo}>
                     <Text style={styles.cropName}>{cropObj.name}</Text>
                     <Text style={styles.cropMsp}>
-                      Official MSP: ₹{cropObj.mspRatePerQuintal.toLocaleString()} / Quintal
+                      {t('booking.officialMspRate', {
+                        rate: cropObj.mspRatePerQuintal.toLocaleString(),
+                      })}
                     </Text>
                   </View>
                 </TouchableOpacity>
@@ -126,7 +136,7 @@ export const BookingConfirmScreen: React.FC<BookingConfirmScreenProps> = ({
 
         {/* Quantity Input */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>2. Estimated Quantity</Text>
+          <Text style={styles.sectionTitle}>{t('booking.stepQuantityTitle')}</Text>
           <View style={styles.quantityInputWrapper}>
             <TextInput
               style={styles.quantityInput}
@@ -137,11 +147,11 @@ export const BookingConfirmScreen: React.FC<BookingConfirmScreenProps> = ({
               placeholderTextColor={COLORS.textMuted}
             />
             <View style={styles.unitPill}>
-              <Text style={styles.unitText}>Quintals</Text>
+              <Text style={styles.unitText}>{t('common.quintals')}</Text>
             </View>
           </View>
           <Text style={styles.helperText}>
-            1 Quintal = 100 kg. Actual weighment will be certified at the mandi weighbridge.
+            {t('booking.quantityHelperDetail')}
           </Text>
         </View>
 
@@ -149,52 +159,53 @@ export const BookingConfirmScreen: React.FC<BookingConfirmScreenProps> = ({
         <View style={styles.payoutCard}>
           <View style={styles.payoutTop}>
             <Ionicons name="cash-outline" size={24} color={COLORS.accentDark} />
-            <Text style={styles.payoutLabel}>Estimated Total MSP Payout</Text>
+            <Text style={styles.payoutLabel}>{t('booking.totalEstimatedPayout')}</Text>
           </View>
           <Text style={styles.payoutAmount}>
             ₹{estimatedPayout.toLocaleString('en-IN')}
           </Text>
           <Text style={styles.payoutFormula}>
-            {numQuantity} Quintals × ₹{selectedCrop.mspRatePerQuintal}/Qtl MSP
+            {t('booking.payoutFormula', {
+              quantity: numQuantity,
+              rate: selectedCrop.mspRatePerQuintal,
+            })}
           </Text>
           <View style={styles.dbtBadge}>
             <Ionicons name="checkmark-done" size={14} color={COLORS.primary} />
             <Text style={styles.dbtText}>
-              Direct Benefit Transfer (DBT) to linked SBI •••• 4819
+              {t('booking.dbtNotice', { account: '•••• 4819' })}
             </Text>
           </View>
         </View>
 
         {/* Transport Type */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>3. Transport Vehicle</Text>
+          <Text style={styles.sectionTitle}>{t('booking.stepVehicle')}</Text>
           <View style={styles.vehicleRow}>
-            {['Tractor Trolley', 'Mini Truck (Pick-up)', 'Bullock Cart'].map(
-              (v) => (
-                <TouchableOpacity
-                  key={v}
+            {VEHICLES.map((v) => (
+              <TouchableOpacity
+                key={v.id}
+                style={[
+                  styles.vehiclePill,
+                  selectedVehicleId === v.id && styles.vehiclePillActive,
+                ]}
+                onPress={() => setSelectedVehicleId(v.id)}
+              >
+                <Text
                   style={[
-                    styles.vehiclePill,
-                    vehicleType === v && styles.vehiclePillActive,
+                    styles.vehicleText,
+                    selectedVehicleId === v.id && styles.vehicleTextActive,
                   ]}
-                  onPress={() => setVehicleType(v)}
                 >
-                  <Text
-                    style={[
-                      styles.vehicleText,
-                      vehicleType === v && styles.vehicleTextActive,
-                    ]}
-                  >
-                    {v}
-                  </Text>
-                </TouchableOpacity>
-              )
-            )}
+                  {t(v.labelKey as any)}
+                </Text>
+              </TouchableOpacity>
+            ))}
           </View>
         </View>
 
         <AppButton
-          title={loading ? 'Locking Slot...' : 'Confirm & Generate Digital Token'}
+          title={loading ? t('booking.lockingSlot') : t('booking.confirmButton')}
           onPress={handleConfirm}
           loading={loading}
           size="lg"

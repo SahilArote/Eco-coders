@@ -8,6 +8,7 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
+import { useTranslation } from 'react-i18next';
 import { COLORS, RADIUS, SHADOWS, SPACING } from '../../theme';
 import { AppHeader } from '../../components/AppHeader';
 import { MetricWidget } from '../../components/MetricWidget';
@@ -25,22 +26,29 @@ export const LiveQueueScreen: React.FC<LiveQueueScreenProps> = ({
   onViewProcurementLifecycle,
   onBack,
 }) => {
+  const { t } = useTranslation();
   const { queueState, activeBooking, advanceQueue, advanceProcurementStage } =
     useAppStore();
 
   const isMyTurn = queueState.currentToken === queueState.yourToken;
   const isClose = queueState.peopleAhead <= 3;
 
+  const nextTokenStr =
+    'A' +
+    String(
+      (parseInt(queueState.currentToken.replace('A', ''), 10) || 92) + 1
+    ).padStart(3, '0');
+
   return (
     <View style={styles.container}>
       <AppHeader
-        title="Live Queue Radar"
-        subtitle="Real-Time Mandi Counter Monitoring"
+        title={t('queue.title')}
+        subtitle={t('queue.subtitle')}
         onBack={onBack}
         rightAction={
           <View style={styles.liveIndicator}>
             <View style={styles.liveDot} />
-            <Text style={styles.liveText}>LIVE</Text>
+            <Text style={styles.liveText}>{t('common.live')}</Text>
           </View>
         }
       />
@@ -53,7 +61,7 @@ export const LiveQueueScreen: React.FC<LiveQueueScreenProps> = ({
             {activeBooking ? activeBooking.centerName : 'APMC Nashik Main Yard'}
           </Text>
           <View style={styles.gateBadge}>
-            <Text style={styles.gateText}>Gate #2 Open</Text>
+            <Text style={styles.gateText}>{t('queue.gateOpen')}</Text>
           </View>
         </View>
 
@@ -74,20 +82,20 @@ export const LiveQueueScreen: React.FC<LiveQueueScreenProps> = ({
             <View style={styles.urgentAlertBox}>
               <Ionicons name="megaphone" size={24} color="#FEF08A" />
               <Text style={styles.urgentAlertText}>
-                YOUR TOKEN IS BEING CALLED!
+                {t('queue.urgentTitle')}
               </Text>
               <Text style={styles.urgentAlertSub}>
-                Proceed to Counter 2 with your produce and vehicle
+                {t('queue.urgentSubtitle')}
               </Text>
             </View>
           ) : (
             <View style={styles.tokenStatusTop}>
               <View style={styles.tokenBox}>
-                <Text style={styles.tokenBoxLabel}>SERVING NOW</Text>
+                <Text style={styles.tokenBoxLabel}>{t('queue.servingNow')}</Text>
                 <Text style={styles.tokenBoxValue}>
                   {queueState.currentToken}
                 </Text>
-                <Text style={styles.counterRef}>Counter #2</Text>
+                <Text style={styles.counterRef}>{t('queue.counterRef')}</Text>
               </View>
 
               <View style={styles.dividerArrow}>
@@ -99,12 +107,12 @@ export const LiveQueueScreen: React.FC<LiveQueueScreenProps> = ({
               </View>
 
               <View style={[styles.tokenBox, styles.myTokenBox]}>
-                <Text style={styles.tokenBoxLabel}>YOUR TOKEN</Text>
+                <Text style={styles.tokenBoxLabel}>{t('queue.yourToken')}</Text>
                 <Text style={styles.tokenBoxValueHighlight}>
                   {queueState.yourToken}
                 </Text>
                 <Text style={styles.counterRef}>
-                  {isClose ? 'Get Ready' : 'In Queue'}
+                  {isClose ? t('queue.getReady') : t('queue.inQueue')}
                 </Text>
               </View>
             </View>
@@ -115,7 +123,7 @@ export const LiveQueueScreen: React.FC<LiveQueueScreenProps> = ({
               ● {queueState.lastUpdatedAt}
             </Text>
             <TouchableOpacity onPress={onViewTokenPass} style={styles.viewPassLink}>
-              <Text style={styles.viewPassText}>View QR Pass</Text>
+              <Text style={styles.viewPassText}>{t('home.viewQrPass')}</Text>
               <Ionicons name="chevron-forward" size={12} color="#D1FAE5" />
             </TouchableOpacity>
           </View>
@@ -124,10 +132,10 @@ export const LiveQueueScreen: React.FC<LiveQueueScreenProps> = ({
         {/* 3 Metric Widgets Row */}
         <View style={styles.metricsRow}>
           <MetricWidget
-            label="Ahead of You"
+            label={t('queue.farmersAhead')}
             value={queueState.peopleAhead}
-            unit="farmers"
-            sublabel="Waiting at Mandi"
+            unit={t('queue.farmersUnit')}
+            sublabel={t('queue.waitingAtMandi')}
             icon={
               <Ionicons
                 name="people-outline"
@@ -137,10 +145,10 @@ export const LiveQueueScreen: React.FC<LiveQueueScreenProps> = ({
             }
           />
           <MetricWidget
-            label="Active Counters"
+            label={t('queue.activeCounters')}
             value={queueState.activeCounters}
-            unit="open"
-            sublabel="Avg 11 min/farmer"
+            unit={t('queue.openUnit')}
+            sublabel={t('queue.avgTimePerFarmer')}
             icon={
               <Ionicons
                 name="desktop-outline"
@@ -156,10 +164,10 @@ export const LiveQueueScreen: React.FC<LiveQueueScreenProps> = ({
           <View style={styles.aiHeader}>
             <View style={styles.aiTag}>
               <Ionicons name="sparkles" size={14} color={COLORS.accentDark} />
-              <Text style={styles.aiTagText}>AI Estimated Wait Time</Text>
+              <Text style={styles.aiTagText}>{t('queue.aiTag')}</Text>
             </View>
             <View style={styles.confidencePill}>
-              <Text style={styles.confidenceText}>88% Model Confidence</Text>
+              <Text style={styles.confidenceText}>{t('queue.modelConfidence')}</Text>
             </View>
           </View>
 
@@ -167,13 +175,11 @@ export const LiveQueueScreen: React.FC<LiveQueueScreenProps> = ({
             <Text style={styles.aiMinutes}>
               ~{queueState.estimatedWaitMinutes}
             </Text>
-            <Text style={styles.aiUnit}>minutes</Text>
+            <Text style={styles.aiUnit}>{t('common.mins')}</Text>
           </View>
 
           <Text style={styles.aiFormulaNote}>
-            Calculated via Gradient Boosting model trained on 10,000+ historical
-            APMC weighbridge transactions. Automatically falls back to deterministic
-            formula if network degrades.
+            {t('queue.aiModelNote')}
           </Text>
         </View>
 
@@ -185,9 +191,9 @@ export const LiveQueueScreen: React.FC<LiveQueueScreenProps> = ({
             activeOpacity={0.8}
           >
             <View style={styles.stageLeft}>
-              <Text style={styles.stageLabel}>CURRENT LIFECYCLE STAGE</Text>
+              <Text style={styles.stageLabel}>{t('queue.currentLifecycleStage')}</Text>
               <Text style={styles.stageName}>
-                {activeBooking.status.replace('_', ' ')}
+                {t(('status.' + activeBooking.status.toLowerCase()) as any)}
               </Text>
             </View>
             <StatusBadge status={activeBooking.status} size="md" />
@@ -198,10 +204,10 @@ export const LiveQueueScreen: React.FC<LiveQueueScreenProps> = ({
         <View style={styles.demoBar}>
           <View style={styles.demoBarHeader}>
             <Ionicons name="hardware-chip-outline" size={16} color={COLORS.accentDark} />
-            <Text style={styles.demoBarTitle}>HACKATHON DEMO SIMULATOR</Text>
+            <Text style={styles.demoBarTitle}>{t('queue.simToolsTitle')}</Text>
           </View>
           <Text style={styles.demoBarSubtitle}>
-            Tap below to simulate procurement actions happening live at the Mandi counter:
+            {t('queue.simSubtitle')}
           </Text>
 
           <TouchableOpacity
@@ -211,10 +217,10 @@ export const LiveQueueScreen: React.FC<LiveQueueScreenProps> = ({
           >
             <Ionicons name="volume-high-outline" size={18} color={COLORS.textInverse} />
             <Text style={styles.demoBtnText}>
-              Simulate Operator Calling Next Token ({queueState.currentToken} ➔ A
-              {String(
-                (parseInt(queueState.currentToken.replace('A', ''), 10) || 92) + 1
-              ).padStart(3, '0')})
+              {t('queue.simBtnCallNext', {
+                current: queueState.currentToken,
+                next: nextTokenStr,
+              })}
             </Text>
           </TouchableOpacity>
 
@@ -225,7 +231,7 @@ export const LiveQueueScreen: React.FC<LiveQueueScreenProps> = ({
           >
             <Ionicons name="play-forward-outline" size={18} color={COLORS.primary} />
             <Text style={styles.demoSecondaryBtnText}>
-              Simulate Stage Advance (Quality ➔ Weighment ➔ Payment)
+              {t('queue.simBtnAdvanceStage')}
             </Text>
           </TouchableOpacity>
         </View>

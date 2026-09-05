@@ -8,6 +8,7 @@ import {
   Alert,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { useTranslation } from 'react-i18next';
 import { COLORS, RADIUS, SHADOWS, SPACING } from '../../theme';
 import { AppHeader } from '../../components/AppHeader';
 import { useAppStore } from '../../state/useAppStore';
@@ -23,16 +24,17 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({
   onOpenGrievance,
   onLogout,
 }) => {
+  const { t } = useTranslation();
   const { farmer, language, setLanguage, resetToInitialDemo } = useAppStore();
 
   const handleReset = () => {
     resetToInitialDemo();
-    Alert.alert('Demo Reset', 'All demo queues, tokens, and bookings restored to baseline.');
+    Alert.alert(t('profile.resetAlertTitle'), t('profile.resetAlertDesc'));
   };
 
   return (
     <View style={styles.container}>
-      <AppHeader title="Farmer Profile & Settings" />
+      <AppHeader title={t('profile.title')} />
 
       <ScrollView contentContainerStyle={styles.scrollContent}>
         {/* Farmer Identity Card */}
@@ -52,12 +54,12 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({
         {/* Landholding & Crop Badges */}
         <View style={styles.landCard}>
           <View style={styles.landMetric}>
-            <Text style={styles.landLabel}>Cultivable Land</Text>
-            <Text style={styles.landValue}>{farmer.landSizeAcres} Acres</Text>
+            <Text style={styles.landLabel}>{t('profile.cultivableLand')}</Text>
+            <Text style={styles.landValue}>{farmer.landSizeAcres} {t('common.acres')}</Text>
           </View>
           <View style={styles.verticalDivider} />
           <View style={styles.cropMetric}>
-            <Text style={styles.landLabel}>Registered Crops</Text>
+            <Text style={styles.landLabel}>{t('profile.registeredCrops')}</Text>
             <Text style={styles.landValue}>
               {farmer.registeredCrops.join(', ')}
             </Text>
@@ -66,7 +68,7 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({
 
         {/* Language Selection */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Preferred Language (भाषा)</Text>
+          <Text style={styles.sectionTitle}>{t('profile.preferredLanguage')}</Text>
           <View style={styles.langRow}>
             {[
               { code: 'en' as const, label: 'English' },
@@ -110,7 +112,7 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({
           <TouchableOpacity style={styles.menuItem} onPress={onEditProfile}>
             <View style={styles.menuLeft}>
               <Ionicons name="create-outline" size={20} color={COLORS.primary} />
-              <Text style={styles.menuLabel}>Edit Land & Profile Information</Text>
+              <Text style={styles.menuLabel}>{t('profile.editProfileMenu')}</Text>
             </View>
             <Ionicons name="chevron-forward" size={18} color={COLORS.textMuted} />
           </TouchableOpacity>
@@ -120,7 +122,7 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({
           <TouchableOpacity style={styles.menuItem} onPress={onOpenGrievance}>
             <View style={styles.menuLeft}>
               <Ionicons name="chatbox-ellipses-outline" size={20} color={COLORS.accentDark} />
-              <Text style={styles.menuLabel}>File Grievance / Feedback</Text>
+              <Text style={styles.menuLabel}>{t('profile.grievanceMenu')}</Text>
             </View>
             <Ionicons name="chevron-forward" size={18} color={COLORS.textMuted} />
           </TouchableOpacity>
@@ -130,7 +132,7 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({
           <TouchableOpacity style={styles.menuItem} onPress={handleReset}>
             <View style={styles.menuLeft}>
               <Ionicons name="refresh-circle-outline" size={20} color={COLORS.info} />
-              <Text style={styles.menuLabel}>Reset Hackathon Demo to Baseline</Text>
+              <Text style={styles.menuLabel}>{t('profile.resetDemoMenu')}</Text>
             </View>
             <Ionicons name="chevron-forward" size={18} color={COLORS.textMuted} />
           </TouchableOpacity>
@@ -140,15 +142,15 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({
         <View style={styles.helplineCard}>
           <Ionicons name="call" size={20} color={COLORS.primary} />
           <View style={styles.helplineInfo}>
-            <Text style={styles.helplineTitle}>National Kisan Call Centre</Text>
-            <Text style={styles.helplineNumber}>1800-180-1551 (Toll-Free, 24x7)</Text>
+            <Text style={styles.helplineTitle}>{t('profile.helplineTitle')}</Text>
+            <Text style={styles.helplineNumber}>{t('profile.helplineNumber')}</Text>
           </View>
         </View>
 
         {/* Logout Button */}
         <TouchableOpacity style={styles.logoutBtn} onPress={onLogout}>
           <Ionicons name="log-out-outline" size={20} color={COLORS.danger} />
-          <Text style={styles.logoutText}>Switch Account / Logout</Text>
+          <Text style={styles.logoutText}>{t('profile.logoutBtn')}</Text>
         </TouchableOpacity>
       </ScrollView>
     </View>

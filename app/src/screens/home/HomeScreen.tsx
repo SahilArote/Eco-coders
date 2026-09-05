@@ -8,6 +8,7 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
+import { useTranslation } from 'react-i18next';
 import { COLORS, RADIUS, SHADOWS, SPACING } from '../../theme';
 import { StatusBadge } from '../../components/StatusBadge';
 import { useAppStore } from '../../state/useAppStore';
@@ -33,6 +34,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
   onNavigateToNotifications,
   onNavigateToGrievance,
 }) => {
+  const { t } = useTranslation();
   const { farmer, activeBooking, queueState, crops, notifications, centers } =
     useAppStore();
 
@@ -43,9 +45,9 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
       {/* Top App Bar */}
       <View style={styles.topBar}>
         <View style={styles.greetingGroup}>
-          <Text style={styles.greetingSub}>Kisan e-Setu Portal</Text>
+          <Text style={styles.greetingSub}>{t('home.greetingSub')}</Text>
           <Text style={styles.greetingName}>
-            राम राम, {farmer.fullName.split(' ')[0]}
+            {t('home.greetingName', { name: farmer.fullName.split(' ')[0] })}
           </Text>
         </View>
 
@@ -83,7 +85,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
           >
             <View style={styles.tokenTopRow}>
               <View style={styles.tokenPill}>
-                <Text style={styles.tokenPillLabel}>ACTIVE TOKEN</Text>
+                <Text style={styles.tokenPillLabel}>{t('home.activeToken')}</Text>
                 <Text style={styles.tokenPillNumber}>
                   {activeBooking.tokenNumber}
                 </Text>
@@ -106,7 +108,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
 
             <View style={styles.tokenQueueSnapshot}>
               <View style={styles.queueSnapshotItem}>
-                <Text style={styles.snapshotLabel}>Currently Serving</Text>
+                <Text style={styles.snapshotLabel}>{t('home.currentlyServing')}</Text>
                 <Text style={styles.snapshotValue}>
                   {queueState.currentToken}
                 </Text>
@@ -115,7 +117,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
               <View style={styles.snapshotDivider} />
 
               <View style={styles.queueSnapshotItem}>
-                <Text style={styles.snapshotLabel}>Farmers Ahead</Text>
+                <Text style={styles.snapshotLabel}>{t('home.farmersAhead')}</Text>
                 <Text style={styles.snapshotValueHighlight}>
                   {queueState.peopleAhead}
                 </Text>
@@ -124,7 +126,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
               <View style={styles.snapshotDivider} />
 
               <View style={styles.queueSnapshotItem}>
-                <Text style={styles.snapshotLabel}>AI Wait Time</Text>
+                <Text style={styles.snapshotLabel}>{t('home.aiWaitTime')}</Text>
                 <Text style={styles.snapshotValue}>
                   ~{queueState.estimatedWaitMinutes}m
                 </Text>
@@ -138,7 +140,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
                 activeOpacity={0.8}
               >
                 <Ionicons name="pulse" size={16} color={COLORS.primaryDark} />
-                <Text style={styles.openRadarBtnText}>Open Live Radar</Text>
+                <Text style={styles.openRadarBtnText}>{t('home.openRadar')}</Text>
               </TouchableOpacity>
 
               <TouchableOpacity
@@ -147,7 +149,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
                 activeOpacity={0.8}
               >
                 <Ionicons name="qr-code" size={16} color={COLORS.textInverse} />
-                <Text style={styles.viewQrPassText}>View QR Pass</Text>
+                <Text style={styles.viewQrPassText}>{t('home.viewQrPass')}</Text>
               </TouchableOpacity>
             </View>
           </LinearGradient>
@@ -159,13 +161,13 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
           >
             <View style={styles.noBookingLeft}>
               <Text style={styles.noBookingTitle}>
-                Procurement Season is Open!
+                {t('home.seasonOpenTitle')}
               </Text>
               <Text style={styles.noBookingSubtitle}>
-                Book a guaranteed Mandi slot to avoid long physical queues.
+                {t('home.seasonOpenSubtitle')}
               </Text>
               <View style={styles.bookNowPill}>
-                <Text style={styles.bookNowText}>Book Mandi Slot Now</Text>
+                <Text style={styles.bookNowText}>{t('home.bookMandiSlotNow')}</Text>
                 <Ionicons name="arrow-forward" size={14} color={COLORS.textInverse} />
               </View>
             </View>
@@ -180,9 +182,9 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
           <View style={styles.sectionHeaderRow}>
             <View style={styles.sectionTitleGroup}>
               <Ionicons name="trending-up" size={18} color={COLORS.primary} />
-              <Text style={styles.sectionTitle}>Government MSP Rates (2025–26)</Text>
+              <Text style={styles.sectionTitle}>{t('home.mspRatesTitle')}</Text>
             </View>
-            <Text style={styles.sectionBadge}>Official Rate</Text>
+            <Text style={styles.sectionBadge}>{t('home.officialRateBadge')}</Text>
           </View>
 
           <ScrollView
@@ -196,7 +198,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
                 <Text style={styles.mspRate}>
                   ₹{crop.mspRatePerQuintal.toLocaleString()}
                 </Text>
-                <Text style={styles.mspUnit}>per Quintal (100kg)</Text>
+                <Text style={styles.mspUnit}>{t('home.perQuintal')}</Text>
               </View>
             ))}
           </ScrollView>
@@ -204,7 +206,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
 
         {/* Quick Action Grid (6 Buttons) */}
         <View style={styles.gridSection}>
-          <Text style={styles.sectionTitle}>Quick Services</Text>
+          <Text style={styles.sectionTitle}>{t('home.quickServices')}</Text>
 
           <View style={styles.actionGrid}>
             <TouchableOpacity
@@ -215,8 +217,8 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
               <View style={[styles.gridIconBox, { backgroundColor: '#ECFDF5' }]}>
                 <Ionicons name="calendar" size={24} color={COLORS.primary} />
               </View>
-              <Text style={styles.gridLabel}>Book Slot</Text>
-              <Text style={styles.gridSublabel}>Zero waiting</Text>
+              <Text style={styles.gridLabel}>{t('home.serviceBookSlot')}</Text>
+              <Text style={styles.gridSublabel}>{t('home.serviceBookSub')}</Text>
             </TouchableOpacity>
 
             <TouchableOpacity
@@ -227,8 +229,8 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
               <View style={[styles.gridIconBox, { backgroundColor: '#FEF3C7' }]}>
                 <Ionicons name="pulse" size={24} color={COLORS.accentDark} />
               </View>
-              <Text style={styles.gridLabel}>Live Queue</Text>
-              <Text style={styles.gridSublabel}>Token radar</Text>
+              <Text style={styles.gridLabel}>{t('home.serviceQueue')}</Text>
+              <Text style={styles.gridSublabel}>{t('home.serviceQueueSub')}</Text>
             </TouchableOpacity>
 
             <TouchableOpacity
@@ -239,8 +241,8 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
               <View style={[styles.gridIconBox, { backgroundColor: '#EFF6FF' }]}>
                 <Ionicons name="scale" size={24} color={COLORS.info} />
               </View>
-              <Text style={styles.gridLabel}>Quality & Weight</Text>
-              <Text style={styles.gridSublabel}>Lab certificate</Text>
+              <Text style={styles.gridLabel}>{t('home.serviceQuality')}</Text>
+              <Text style={styles.gridSublabel}>{t('home.serviceQualitySub')}</Text>
             </TouchableOpacity>
 
             <TouchableOpacity
@@ -251,8 +253,8 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
               <View style={[styles.gridIconBox, { backgroundColor: '#F0FDF4' }]}>
                 <Ionicons name="cash" size={24} color={COLORS.primary} />
               </View>
-              <Text style={styles.gridLabel}>DBT Payout</Text>
-              <Text style={styles.gridSublabel}>Bank transfer</Text>
+              <Text style={styles.gridLabel}>{t('home.serviceDbt')}</Text>
+              <Text style={styles.gridSublabel}>{t('home.serviceDbtSub')}</Text>
             </TouchableOpacity>
 
             <TouchableOpacity
@@ -263,8 +265,8 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
               <View style={[styles.gridIconBox, { backgroundColor: '#F8FAFC' }]}>
                 <Ionicons name="business" size={24} color={COLORS.textSecondary} />
               </View>
-              <Text style={styles.gridLabel}>APMC Mandis</Text>
-              <Text style={styles.gridSublabel}>4 nearby</Text>
+              <Text style={styles.gridLabel}>{t('home.serviceMandis')}</Text>
+              <Text style={styles.gridSublabel}>{t('home.serviceMandisSub', { count: 4 })}</Text>
             </TouchableOpacity>
 
             <TouchableOpacity
@@ -275,8 +277,8 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
               <View style={[styles.gridIconBox, { backgroundColor: '#FEF2F2' }]}>
                 <Ionicons name="chatbox" size={24} color={COLORS.danger} />
               </View>
-              <Text style={styles.gridLabel}>Grievance</Text>
-              <Text style={styles.gridSublabel}>Direct redressal</Text>
+              <Text style={styles.gridLabel}>{t('home.serviceGrievance')}</Text>
+              <Text style={styles.gridSublabel}>{t('home.serviceGrievanceSub')}</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -285,29 +287,29 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
         <View style={styles.centerHighlightCard}>
           <View style={styles.highlightHeader}>
             <View>
-              <Text style={styles.highlightLabel}>NEAREST MANDI YARD</Text>
+              <Text style={styles.highlightLabel}>{t('home.nearestMandiLabel')}</Text>
               <Text style={styles.highlightTitle}>{centers[0].name}</Text>
             </View>
             <View style={styles.openPill}>
               <View style={styles.greenDot} />
-              <Text style={styles.openPillText}>OPEN</Text>
+              <Text style={styles.openPillText}>{t('status.open')}</Text>
             </View>
           </View>
 
           <View style={styles.highlightMetaRow}>
             <Text style={styles.highlightDistance}>
-              📍 {centers[0].distanceKm} km away • {centers[0].address}
+              📍 {t('common.km_away', { count: centers[0].distanceKm })} • {centers[0].address}
             </Text>
           </View>
 
           <View style={styles.highlightStats}>
             <View style={styles.highlightStat}>
               <Text style={styles.statNum}>{centers[0].activeCounters} / {centers[0].totalCounters}</Text>
-              <Text style={styles.statLabel}>Counters Active</Text>
+              <Text style={styles.statLabel}>{t('home.countersActive')}</Text>
             </View>
             <View style={styles.highlightStat}>
-              <Text style={styles.statNum}>{centers[0].dailyCapacityQuintals} Qtl</Text>
-              <Text style={styles.statLabel}>Daily Capacity</Text>
+              <Text style={styles.statNum}>{centers[0].dailyCapacityQuintals} {t('home.qtl')}</Text>
+              <Text style={styles.statLabel}>{t('home.dailyCapacity')}</Text>
             </View>
           </View>
         </View>

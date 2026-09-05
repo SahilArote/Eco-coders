@@ -9,13 +9,20 @@ import {
   QueueState,
   TimeSlot,
 } from '../types';
+import i18n, { AppLanguage, changeAppLanguage, initializeLanguage } from '../i18n';
 
 interface AppState {
   // User Profile
   farmer: FarmerProfile;
-  language: 'en' | 'hi' | 'mr';
-  setLanguage: (lang: 'en' | 'hi' | 'mr') => void;
+  language: AppLanguage;
+  setLanguage: (lang: AppLanguage) => void;
+  initLanguage: () => Promise<void>;
   updateFarmerProfile: (profile: Partial<FarmerProfile>) => void;
+
+  // Auth State
+  isAuthenticated: boolean;
+  login: () => void;
+  logout: () => void;
 
   // Master Data
   crops: Crop[];
@@ -327,9 +334,20 @@ export const useAppStore = create<AppState>((set, get) => ({
     registeredCrops: ['Wheat', 'Soybean', 'Chana'],
   },
   language: 'en',
-  setLanguage: (lang) => set({ language: lang }),
+  setLanguage: (lang) => {
+    changeAppLanguage(lang);
+    set({ language: lang });
+  },
+  initLanguage: async () => {
+    const saved = await initializeLanguage();
+    set({ language: saved });
+  },
   updateFarmerProfile: (profile) =>
     set((state) => ({ farmer: { ...state.farmer, ...profile } })),
+
+  isAuthenticated: false,
+  login: () => set({ isAuthenticated: true }),
+  logout: () => set({ isAuthenticated: false }),
 
   crops: INITIAL_CROPS,
   centers: INITIAL_CENTERS,
@@ -435,18 +453,18 @@ export const useAppStore = create<AppState>((set, get) => ({
         newNotifs.unshift({
           id: `notif-${Date.now()}`,
           type: 'TOKEN_CALLED',
-          title: `🚀 YOUR TOKEN ${q.yourToken} IS CALLED!`,
-          message: 'Please proceed immediately to Counter 2 with your tractor/produce.',
-          timestamp: 'Just now',
+          title: `🚀 ${i18n.t('queue.urgentTitle')}`,
+          message: i18n.t('queue.urgentSubtitle'),
+          timestamp: i18n.t('common.today'),
           isRead: false,
         });
       } else {
         newNotifs.unshift({
           id: `notif-${Date.now()}`,
           type: 'TOKEN_CALLED',
-          title: `Counter updated: Calling ${nextToken}`,
-          message: `${newAhead} farmers ahead of you. Est. wait: ~${newWait} mins.`,
-          timestamp: 'Just now',
+          title: `${i18n.t('queue.servingNow')}: ${nextToken}`,
+          message: `${newAhead} ${i18n.t('home.farmersAhead')}. ~${newWait} ${i18n.t('common.mins')}.`,
+          timestamp: i18n.t('common.today'),
           isRead: false,
         });
       }
@@ -503,9 +521,9 @@ export const useAppStore = create<AppState>((set, get) => ({
           {
             id: `notif-${Date.now()}`,
             type: 'STATUS_CHANGE',
-            title: `Procurement Status: ${nextStage.replace('_', ' ')}`,
-            message: `Stage updated for Token ${state.activeBooking.tokenNumber}.`,
-            timestamp: 'Just now',
+            title: `${i18n.t('lifecycle.title')}: ${i18n.t('status.' + nextStage.toLowerCase(), { defaultValue: nextStage.replace('_', ' ') })}`,
+            message: i18n.t('lifecycle.stepBookedDesc', { token: state.activeBooking.tokenNumber }),
+            timestamp: i18n.t('common.today'),
             isRead: false,
           },
           ...state.notifications,

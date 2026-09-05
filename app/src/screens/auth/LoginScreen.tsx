@@ -11,8 +11,10 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
+import { useTranslation } from 'react-i18next';
 import { COLORS, RADIUS, SHADOWS, SPACING } from '../../theme';
 import { AppButton } from '../../components/AppButton';
+import { FarmerAppLogo } from '../../components/FarmerAppLogo';
 import { useAppStore } from '../../state/useAppStore';
 
 interface LoginScreenProps {
@@ -20,6 +22,7 @@ interface LoginScreenProps {
 }
 
 export const LoginScreen: React.FC<LoginScreenProps> = ({ onLoginSuccess }) => {
+  const { t } = useTranslation();
   const { farmer, language, setLanguage } = useAppStore();
   const [phoneNumber, setPhoneNumber] = useState('9822144589');
   const [otpStep, setOtpStep] = useState(false);
@@ -54,7 +57,7 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ onLoginSuccess }) => {
         <View style={styles.topBar}>
           <View style={styles.govBadge}>
             <Ionicons name="shield-checkmark" size={14} color={COLORS.primary} />
-            <Text style={styles.govText}>DoCA • Smart Procurement</Text>
+            <Text style={styles.govText}>{t('auth.docaBadge')}</Text>
           </View>
           <View style={styles.langSelector}>
             {(['en', 'hi', 'mr'] as const).map((lang) => (
@@ -86,24 +89,25 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ onLoginSuccess }) => {
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}
         >
-          <View style={styles.iconCircle}>
-            <Ionicons name="leaf" size={28} color={COLORS.accent} />
+          <View style={styles.logoBadgeContainer}>
+            <FarmerAppLogo size={68} />
           </View>
-          <Text style={styles.heroTitle}>Kisan e-Setu (किसान सेतु)</Text>
+          <Text style={styles.heroTitle}>{t('common.appName')}</Text>
+          <Text style={styles.heroTitleHindi}>{t('common.portalSubtitle')}</Text>
           <Text style={styles.heroSubtitle}>
-            Direct APMC Scheduling, Live Queue Tracking & Transparent MSP Payout
+            {t('auth.heroSubtitle')}
           </Text>
         </LinearGradient>
 
         {/* Login Form Card */}
         <View style={styles.formCard}>
           <Text style={styles.formHeader}>
-            {otpStep ? 'Enter 4-Digit OTP' : 'Farmer Registration / Login'}
+            {otpStep ? t('auth.enterOtpTitle') : t('auth.loginTitle')}
           </Text>
           <Text style={styles.formSubHeader}>
             {otpStep
-              ? `We sent an SMS code to +91 ${phoneNumber}`
-              : 'Enter your 10-digit Aadhaar-linked mobile number'}
+              ? t('auth.otpSentTo', { phone: phoneNumber })
+              : t('auth.loginSubtitle')}
           </Text>
 
           {!otpStep ? (
@@ -113,7 +117,7 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ onLoginSuccess }) => {
               </View>
               <TextInput
                 style={styles.phoneInput}
-                placeholder="Enter Mobile Number"
+                placeholder={t('auth.enterMobilePlaceholder')}
                 placeholderTextColor={COLORS.textMuted}
                 keyboardType="phone-pad"
                 maxLength={10}
@@ -135,13 +139,13 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ onLoginSuccess }) => {
               />
               <View style={styles.demoOtpHint}>
                 <Ionicons name="information-circle-outline" size={14} color={COLORS.primary} />
-                <Text style={styles.demoOtpText}>Demo OTP: 8492 (Auto-filled)</Text>
+                <Text style={styles.demoOtpText}>{t('auth.demoOtpHint')}</Text>
               </View>
             </View>
           )}
 
           <AppButton
-            title={otpStep ? 'Verify OTP & Continue' : 'Get Verification OTP'}
+            title={otpStep ? t('auth.verifyOtp') : t('auth.sendOtp')}
             onPress={otpStep ? handleVerifyOtp : handleSendOtp}
             size="lg"
             style={styles.actionBtn}
@@ -152,13 +156,13 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ onLoginSuccess }) => {
               style={styles.changeNumberBtn}
               onPress={() => setOtpStep(false)}
             >
-              <Text style={styles.changeNumberText}>Edit Phone Number</Text>
+              <Text style={styles.changeNumberText}>{t('auth.editPhone')}</Text>
             </TouchableOpacity>
           )}
 
           <View style={styles.dividerRow}>
             <View style={styles.dividerLine} />
-            <Text style={styles.dividerText}>QUICK DEMO</Text>
+            <Text style={styles.dividerText}>{t('auth.quickDemo')}</Text>
             <View style={styles.dividerLine} />
           </View>
 
@@ -174,7 +178,7 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ onLoginSuccess }) => {
             <View style={styles.personaInfo}>
               <Text style={styles.personaName}>{farmer.fullName}</Text>
               <Text style={styles.personaMeta}>
-                {farmer.village}, {farmer.district} • 6.5 Acres (Wheat & Chana)
+                {farmer.village}, {farmer.district} • 6.5 {t('common.acres')} (Wheat & Chana)
               </Text>
             </View>
             <Ionicons name="chevron-forward" size={18} color={COLORS.primary} />
@@ -184,7 +188,7 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ onLoginSuccess }) => {
         {/* Footer Support Tag */}
         <View style={styles.footer}>
           <Ionicons name="headset-outline" size={16} color={COLORS.textSecondary} />
-          <Text style={styles.footerText}>Toll-Free Kisan Helpline: 1800-180-1551</Text>
+          <Text style={styles.footerText}>{t('auth.kisanHelpline')}</Text>
         </View>
       </ScrollView>
     </KeyboardAvoidingView>
@@ -251,21 +255,28 @@ const styles = StyleSheet.create({
     marginBottom: SPACING.xl,
     ...SHADOWS.elevated,
   },
-  iconCircle: {
-    width: 56,
-    height: 56,
-    borderRadius: 28,
-    backgroundColor: 'rgba(255, 255, 255, 0.2)',
-    alignItems: 'center',
-    justifyContent: 'center',
+  logoBadgeContainer: {
     marginBottom: SPACING.md,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.25,
+    shadowRadius: 8,
+    elevation: 5,
   },
   heroTitle: {
     fontSize: 22,
-    fontWeight: '800',
+    fontWeight: '900',
     color: COLORS.textInverse,
     textAlign: 'center',
-    letterSpacing: -0.3,
+    letterSpacing: 1,
+  },
+  heroTitleHindi: {
+    fontSize: 14,
+    fontWeight: '700',
+    color: '#FEF08A',
+    textAlign: 'center',
+    marginTop: 2,
+    letterSpacing: 0.5,
   },
   heroSubtitle: {
     fontSize: 13,

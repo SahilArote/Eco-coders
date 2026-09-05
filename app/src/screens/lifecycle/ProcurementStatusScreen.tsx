@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { useTranslation } from 'react-i18next';
 import { COLORS, RADIUS, SHADOWS, SPACING } from '../../theme';
 import { AppHeader } from '../../components/AppHeader';
 import { StatusBadge } from '../../components/StatusBadge';
@@ -19,50 +20,46 @@ interface ProcurementStatusScreenProps {
   onBack?: () => void;
 }
 
-const LIFECYCLE_STEPS: {
-  status: ProcurementStatus;
-  title: string;
-  desc: string;
-}[] = [
+const LIFECYCLE_STEP_KEYS = [
   {
-    status: 'BOOKED',
-    title: 'Slot Booked & Token Allocated',
-    desc: 'Token A105 generated and slot confirmed.',
+    status: 'BOOKED' as ProcurementStatus,
+    titleKey: 'lifecycle.stepBookedTitle',
+    descKey: 'lifecycle.stepBookedDesc',
   },
   {
-    status: 'ARRIVED',
-    title: 'Physical Arrival at Mandi Gate',
-    desc: 'Vehicle QR verified at Gate #2 entry.',
+    status: 'ARRIVED' as ProcurementStatus,
+    titleKey: 'lifecycle.stepArrivedTitle',
+    descKey: 'lifecycle.stepArrivedDesc',
   },
   {
-    status: 'WAITING',
-    title: 'In Physical Queue Line',
-    desc: 'Vehicle staged in holding bay awaiting counter call.',
+    status: 'WAITING' as ProcurementStatus,
+    titleKey: 'lifecycle.stepWaitingTitle',
+    descKey: 'lifecycle.stepWaitingDesc',
   },
   {
-    status: 'PROCESSING',
-    title: 'Called to Unloading Counter',
-    desc: 'Produce positioned at Counter 2 intake platform.',
+    status: 'PROCESSING' as ProcurementStatus,
+    titleKey: 'lifecycle.stepProcessingTitle',
+    descKey: 'lifecycle.stepProcessingDesc',
   },
   {
-    status: 'QUALITY_CHECK',
-    title: 'Moisture & Grade Lab Testing',
-    desc: 'Government inspection officer testing sample against FAQ norms.',
+    status: 'QUALITY_CHECK' as ProcurementStatus,
+    titleKey: 'lifecycle.stepQcTitle',
+    descKey: 'lifecycle.stepQcDesc',
   },
   {
-    status: 'WEIGHMENT',
-    title: 'Electronic Weighbridge Measurement',
-    desc: 'Gross and Tare vehicle weighment recorded.',
+    status: 'WEIGHMENT' as ProcurementStatus,
+    titleKey: 'lifecycle.stepWeighmentTitle',
+    descKey: 'lifecycle.stepWeighmentDesc',
   },
   {
-    status: 'ACCEPTED',
-    title: 'Procurement Acceptance Certified',
-    desc: 'Procurement receipt signed and forwarded for DBT payment.',
+    status: 'ACCEPTED' as ProcurementStatus,
+    titleKey: 'lifecycle.stepAcceptedTitle',
+    descKey: 'lifecycle.stepAcceptedDesc',
   },
   {
-    status: 'PAYMENT_COMPLETED',
-    title: 'Direct Benefit Transfer (DBT) Settled',
-    desc: 'Funds transferred directly to linked bank account.',
+    status: 'PAYMENT_COMPLETED' as ProcurementStatus,
+    titleKey: 'lifecycle.stepPaymentTitle',
+    descKey: 'lifecycle.stepPaymentDesc',
   },
 ];
 
@@ -70,28 +67,29 @@ export const ProcurementStatusScreen: React.FC<ProcurementStatusScreenProps> = (
   onViewPayment,
   onBack,
 }) => {
+  const { t } = useTranslation();
   const { activeBooking, advanceProcurementStage } = useAppStore();
 
   if (!activeBooking) {
     return (
       <View style={styles.container}>
-        <AppHeader title="Procurement Status" onBack={onBack} />
+        <AppHeader title={t('lifecycle.title')} onBack={onBack} />
         <View style={styles.emptyContainer}>
-          <Text style={styles.emptyText}>No active procurement record</Text>
+          <Text style={styles.emptyText}>{t('lifecycle.noRecord')}</Text>
         </View>
       </View>
     );
   }
 
   const currentStatus = activeBooking.status;
-  const currentStepIndex = LIFECYCLE_STEPS.findIndex(
+  const currentStepIndex = LIFECYCLE_STEP_KEYS.findIndex(
     (s) => s.status === currentStatus
   );
 
   return (
     <View style={styles.container}>
       <AppHeader
-        title="Procurement Journey"
+        title={t('lifecycle.title')}
         subtitle={`Token ${activeBooking.tokenNumber} • ${activeBooking.cropName}`}
         onBack={onBack}
         rightAction={<StatusBadge status={currentStatus} size="sm" />}
@@ -102,7 +100,7 @@ export const ProcurementStatusScreen: React.FC<ProcurementStatusScreenProps> = (
         <View style={styles.overviewCard}>
           <View style={styles.overviewRow}>
             <View>
-              <Text style={styles.overviewLabel}>Mandi Center</Text>
+              <Text style={styles.overviewLabel}>{t('lifecycle.mandiCenter')}</Text>
               <Text style={styles.overviewTitle}>{activeBooking.centerName}</Text>
             </View>
             <View style={styles.tokenPill}>
@@ -117,44 +115,49 @@ export const ProcurementStatusScreen: React.FC<ProcurementStatusScreenProps> = (
             <View style={styles.labHeader}>
               <View style={styles.labTitleGroup}>
                 <Ionicons name="flask" size={18} color={COLORS.primary} />
-                <Text style={styles.labTitle}>Government Quality Inspection Slip</Text>
+                <Text style={styles.labTitle}>{t('lifecycle.qcReportTitle')}</Text>
               </View>
               <View style={styles.passedBadge}>
                 <Ionicons name="checkmark-circle" size={12} color={COLORS.primaryDark} />
-                <Text style={styles.passedText}>FAQ PASSED</Text>
+                <Text style={styles.passedText}>{t('lifecycle.faqPassed')}</Text>
               </View>
             </View>
 
             <View style={styles.labMetricsGrid}>
               <View style={styles.labMetricBox}>
-                <Text style={styles.labMetricLabel}>Moisture %</Text>
+                <Text style={styles.labMetricLabel}>{t('lifecycle.qcMoisture')}</Text>
                 <Text style={styles.labMetricValue}>
                   {activeBooking.qualityReport.moisturePercentage}%
                 </Text>
                 <Text style={styles.labMetricSub}>
-                  Max limit: {activeBooking.qualityReport.moistureStandardMax}%
+                  {t('lifecycle.maxLimit', {
+                    max: activeBooking.qualityReport.moistureStandardMax,
+                  })}
                 </Text>
               </View>
 
               <View style={styles.labMetricBox}>
-                <Text style={styles.labMetricLabel}>Foreign Matter</Text>
+                <Text style={styles.labMetricLabel}>{t('lifecycle.qcForeignMatter')}</Text>
                 <Text style={styles.labMetricValue}>
                   {activeBooking.qualityReport.foreignMatterPercentage}%
                 </Text>
-                <Text style={styles.labMetricSub}>Within tolerance</Text>
+                <Text style={styles.labMetricSub}>{t('lifecycle.withinTolerance')}</Text>
               </View>
 
               <View style={styles.labMetricBox}>
-                <Text style={styles.labMetricLabel}>Certified Grade</Text>
+                <Text style={styles.labMetricLabel}>{t('lifecycle.qcGrade')}</Text>
                 <Text style={styles.labMetricValueHighlight}>
                   {activeBooking.qualityReport.qualityGrade.replace('_', ' ')}
                 </Text>
-                <Text style={styles.labMetricSub}>Premium Quality</Text>
+                <Text style={styles.labMetricSub}>{t('lifecycle.premiumQuality')}</Text>
               </View>
             </View>
 
             <Text style={styles.inspectorNote}>
-              Inspected by: {activeBooking.qualityReport.inspectorName} ({activeBooking.qualityReport.checkedAt})
+              {t('lifecycle.inspectedBy', {
+                inspector: activeBooking.qualityReport.inspectorName,
+                time: activeBooking.qualityReport.checkedAt,
+              })}
             </Text>
           </View>
         )}
@@ -165,7 +168,7 @@ export const ProcurementStatusScreen: React.FC<ProcurementStatusScreenProps> = (
             <View style={styles.labHeader}>
               <View style={styles.labTitleGroup}>
                 <Ionicons name="scale" size={18} color={COLORS.accentDark} />
-                <Text style={styles.weighTitle}>Electronic Weighbridge Certificate</Text>
+                <Text style={styles.weighTitle}>{t('lifecycle.slipTitle')}</Text>
               </View>
               <Text style={styles.weighTime}>
                 {activeBooking.weighmentSlip.weighedAt}
@@ -174,23 +177,23 @@ export const ProcurementStatusScreen: React.FC<ProcurementStatusScreenProps> = (
 
             <View style={styles.weightRow}>
               <View style={styles.weightCol}>
-                <Text style={styles.weightLabel}>Gross Weight</Text>
+                <Text style={styles.weightLabel}>{t('lifecycle.slipGross')}</Text>
                 <Text style={styles.weightVal}>
                   {activeBooking.weighmentSlip.grossWeightKg.toLocaleString()} kg
                 </Text>
               </View>
               <Text style={styles.weightMinus}>−</Text>
               <View style={styles.weightCol}>
-                <Text style={styles.weightLabel}>Tare (Vehicle)</Text>
+                <Text style={styles.weightLabel}>{t('lifecycle.slipTare')}</Text>
                 <Text style={styles.weightVal}>
                   {activeBooking.weighmentSlip.tareWeightKg.toLocaleString()} kg
                 </Text>
               </View>
               <Text style={styles.weightEquals}>=</Text>
               <View style={styles.weightColHighlight}>
-                <Text style={styles.weightLabelHighlight}>Net Produce</Text>
+                <Text style={styles.weightLabelHighlight}>{t('lifecycle.slipNet')}</Text>
                 <Text style={styles.netWeightVal}>
-                  {activeBooking.weighmentSlip.netQuintals} Quintals
+                  {activeBooking.weighmentSlip.netQuintals} {t('common.quintals')}
                 </Text>
                 <Text style={styles.netWeightKg}>
                   ({activeBooking.weighmentSlip.netWeightKg.toLocaleString()} kg)
@@ -199,15 +202,18 @@ export const ProcurementStatusScreen: React.FC<ProcurementStatusScreenProps> = (
             </View>
 
             <Text style={styles.weighbridgeMeta}>
-              Station: {activeBooking.weighmentSlip.weighedBy} • Slip #{activeBooking.weighmentSlip.id}
+              {t('lifecycle.weighMeta', {
+                station: activeBooking.weighmentSlip.weighedBy,
+                slip: activeBooking.weighmentSlip.id,
+              })}
             </Text>
           </View>
         )}
 
         {/* 8-Stage Visual State Machine Stepper */}
-        <Text style={styles.timelineHeading}>End-to-End State Machine Progress</Text>
+        <Text style={styles.timelineHeading}>{t('lifecycle.timelineHeading')}</Text>
         <View style={styles.stepperContainer}>
-          {LIFECYCLE_STEPS.map((step, index) => {
+          {LIFECYCLE_STEP_KEYS.map((step, index) => {
             const isCompleted = index < currentStepIndex;
             const isCurrent = index === currentStepIndex;
             const isFuture = index > currentStepIndex;
@@ -236,7 +242,7 @@ export const ProcurementStatusScreen: React.FC<ProcurementStatusScreenProps> = (
                       <Text style={styles.stepNumberText}>{index + 1}</Text>
                     )}
                   </View>
-                  {index < LIFECYCLE_STEPS.length - 1 && (
+                  {index < LIFECYCLE_STEP_KEYS.length - 1 && (
                     <View
                       style={[
                         styles.verticalLine,
@@ -256,15 +262,17 @@ export const ProcurementStatusScreen: React.FC<ProcurementStatusScreenProps> = (
                         isCompleted && styles.stepTitleCompleted,
                       ]}
                     >
-                      {step.title}
+                      {t(step.titleKey as any)}
                     </Text>
                     {isCurrent && (
                       <View style={styles.activePill}>
-                        <Text style={styles.activePillText}>IN PROGRESS</Text>
+                        <Text style={styles.activePillText}>{t('lifecycle.inProgress')}</Text>
                       </View>
                     )}
                   </View>
-                  <Text style={styles.stepDesc}>{step.desc}</Text>
+                  <Text style={styles.stepDesc}>
+                    {t(step.descKey as any, { token: activeBooking.tokenNumber })}
+                  </Text>
                 </View>
               </View>
             );
@@ -274,7 +282,7 @@ export const ProcurementStatusScreen: React.FC<ProcurementStatusScreenProps> = (
         {/* Actions */}
         <View style={styles.actionSection}>
           <AppButton
-            title="View Direct Benefit Transfer (DBT) Payout"
+            title={t('lifecycle.viewPaymentBtn')}
             onPress={onViewPayment}
             size="lg"
             icon={<Ionicons name="card-outline" size={20} color={COLORS.textInverse} />}
@@ -286,7 +294,7 @@ export const ProcurementStatusScreen: React.FC<ProcurementStatusScreenProps> = (
           >
             <Ionicons name="play-forward" size={16} color={COLORS.primary} />
             <Text style={styles.advanceStageText}>
-              [Demo] Advance to Next Lifecycle Step
+              {t('lifecycle.simAdvanceBtn')}
             </Text>
           </TouchableOpacity>
         </View>

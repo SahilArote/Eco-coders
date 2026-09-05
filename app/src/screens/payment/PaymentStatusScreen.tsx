@@ -9,6 +9,7 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
+import { useTranslation } from 'react-i18next';
 import { COLORS, RADIUS, SHADOWS, SPACING } from '../../theme';
 import { AppHeader } from '../../components/AppHeader';
 import { AppButton } from '../../components/AppButton';
@@ -24,6 +25,7 @@ export const PaymentStatusScreen: React.FC<PaymentStatusScreenProps> = ({
   onBack,
   onGoHome,
 }) => {
+  const { t } = useTranslation();
   const { activeBooking, farmer } = useAppStore();
 
   const payment = activeBooking?.paymentDetails || {
@@ -43,7 +45,13 @@ export const PaymentStatusScreen: React.FC<PaymentStatusScreenProps> = ({
   const handleShareReceipt = async () => {
     try {
       await Share.share({
-        message: `Official MSP Payment Receipt\nAmount: ₹${payment.netAmount.toLocaleString()}\nCrop: ${activeBooking?.cropName || 'Wheat'}\nQuantity: ${payment.quantityQuintals} Quintals\nDBT Ref: ${payment.dbtReferenceNumber}\nBeneficiary: ${farmer.fullName}`,
+        message: t('payment.shareReceipt', {
+          amount: payment.netAmount.toLocaleString(),
+          crop: activeBooking?.cropName || 'Wheat',
+          quantity: payment.quantityQuintals,
+          ref: payment.dbtReferenceNumber,
+          beneficiary: farmer.fullName,
+        }),
       });
     } catch (e) {
       // ignore
@@ -53,8 +61,8 @@ export const PaymentStatusScreen: React.FC<PaymentStatusScreenProps> = ({
   return (
     <View style={styles.container}>
       <AppHeader
-        title="Direct Benefit Transfer"
-        subtitle="Government MSP Payment Settlement"
+        title={t('payment.title')}
+        subtitle={t('payment.subtitle')}
         onBack={onBack}
         rightAction={
           <TouchableOpacity onPress={handleShareReceipt} style={styles.shareBtn}>
@@ -73,10 +81,10 @@ export const PaymentStatusScreen: React.FC<PaymentStatusScreenProps> = ({
         >
           <View style={styles.govTag}>
             <Ionicons name="shield-checkmark" size={14} color={COLORS.accent} />
-            <Text style={styles.govTagText}>DBT • PFMS Direct Transfer</Text>
+            <Text style={styles.govTagText}>{t('payment.govTag')}</Text>
           </View>
 
-          <Text style={styles.amountLabel}>Total Net Payout</Text>
+          <Text style={styles.amountLabel}>{t('payment.amountLabel')}</Text>
           <Text style={styles.amountValue}>
             ₹{payment.netAmount.toLocaleString('en-IN')}
           </Text>
@@ -95,40 +103,40 @@ export const PaymentStatusScreen: React.FC<PaymentStatusScreenProps> = ({
 
         {/* Calculation Breakdown Card */}
         <View style={styles.detailsCard}>
-          <Text style={styles.cardSectionTitle}>MSP Rate Calculation</Text>
+          <Text style={styles.cardSectionTitle}>{t('payment.breakdownTitle')}</Text>
 
           <View style={styles.calcRow}>
-            <Text style={styles.calcLabel}>Certified Net Produce</Text>
+            <Text style={styles.calcLabel}>{t('payment.netQuantity')}</Text>
             <Text style={styles.calcValue}>
-              {payment.quantityQuintals} Quintals
+              {payment.quantityQuintals} {t('common.quintals')}
             </Text>
           </View>
 
           <View style={styles.calcRow}>
-            <Text style={styles.calcLabel}>Official Government MSP</Text>
+            <Text style={styles.calcLabel}>{t('payment.mspRate')}</Text>
             <Text style={styles.calcValue}>
-              ₹{payment.mspRate.toLocaleString()} / Quintal
+              ₹{payment.mspRate.toLocaleString()} / {t('common.quintal')}
             </Text>
           </View>
 
           <View style={styles.calcDivider} />
 
           <View style={styles.calcRowTotal}>
-            <Text style={styles.calcLabelTotal}>Gross Payout</Text>
+            <Text style={styles.calcLabelTotal}>{t('payment.grossEntitlement')}</Text>
             <Text style={styles.calcValueTotal}>
               ₹{payment.netAmount.toLocaleString('en-IN')}
             </Text>
           </View>
 
           <View style={styles.calcRowDeduction}>
-            <Text style={styles.deductionLabel}>Mandi Fee / Deductions</Text>
-            <Text style={styles.deductionValue}>₹0.00 (100% Free for Farmers)</Text>
+            <Text style={styles.deductionLabel}>{t('payment.deductionsLabel')}</Text>
+            <Text style={styles.deductionValue}>{t('payment.deductionsValue')}</Text>
           </View>
         </View>
 
         {/* Banking & Transfer Details Card */}
         <View style={styles.detailsCard}>
-          <Text style={styles.cardSectionTitle}>Beneficiary Account</Text>
+          <Text style={styles.cardSectionTitle}>{t('payment.bankTitle')}</Text>
 
           <View style={styles.bankRow}>
             <View style={styles.bankIcon}>
@@ -143,17 +151,17 @@ export const PaymentStatusScreen: React.FC<PaymentStatusScreenProps> = ({
 
           <View style={styles.dbtMetaBox}>
             <View style={styles.dbtMetaRow}>
-              <Text style={styles.metaLabel}>PFMS UTR Number</Text>
+              <Text style={styles.metaLabel}>{t('payment.dbtReference')}</Text>
               <Text style={styles.metaValue}>{payment.dbtReferenceNumber}</Text>
             </View>
             <View style={styles.dbtMetaRow}>
-              <Text style={styles.metaLabel}>Beneficiary Name</Text>
+              <Text style={styles.metaLabel}>{t('payment.beneficiaryName')}</Text>
               <Text style={styles.metaValue}>{farmer.fullName}</Text>
             </View>
             <View style={styles.dbtMetaRow}>
-              <Text style={styles.metaLabel}>Settlement Date</Text>
+              <Text style={styles.metaLabel}>{t('payment.settlementTime')}</Text>
               <Text style={styles.metaValue}>
-                {payment.completedAt || 'Processing (within 24 hrs)'}
+                {payment.completedAt || t('payment.processingWithin24h')}
               </Text>
             </View>
           </View>
@@ -163,12 +171,12 @@ export const PaymentStatusScreen: React.FC<PaymentStatusScreenProps> = ({
         <View style={styles.guaranteeBox}>
           <Ionicons name="information-circle" size={18} color={COLORS.primary} />
           <Text style={styles.guaranteeText}>
-            Direct Benefit Transfer funds are credited directly to your bank account with zero intermediary commission as mandated by DoCA regulations.
+            {t('payment.trustGuarantee')}
           </Text>
         </View>
 
         <AppButton
-          title="Return to Dashboard"
+          title={t('payment.returnHomeBtn')}
           onPress={onGoHome}
           size="lg"
           style={styles.homeBtn}
