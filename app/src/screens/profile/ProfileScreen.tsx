@@ -17,15 +17,24 @@ interface ProfileScreenProps {
   onEditProfile: () => void;
   onOpenGrievance: () => void;
   onLogout: () => void;
+  onOpenKyc?: () => void;
 }
 
 export const ProfileScreen: React.FC<ProfileScreenProps> = ({
   onEditProfile,
   onOpenGrievance,
   onLogout,
+  onOpenKyc,
 }) => {
   const { t } = useTranslation();
-  const { farmer, language, setLanguage, resetToInitialDemo } = useAppStore();
+  const {
+    farmer,
+    language,
+    setLanguage,
+    resetToInitialDemo,
+    kycStatus,
+    bankDetails,
+  } = useAppStore();
 
   const handleReset = () => {
     resetToInitialDemo();
@@ -64,6 +73,95 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({
               {farmer.registeredCrops.join(', ')}
             </Text>
           </View>
+        </View>
+
+        {/* Bank KYC Status Card */}
+        <View style={styles.kycCard}>
+          <View style={styles.kycHeaderRow}>
+            <View style={styles.kycTitleLeft}>
+              <Ionicons
+                name={
+                  kycStatus === 'COMPLETED'
+                    ? 'shield-checkmark'
+                    : 'shield-outline'
+                }
+                size={20}
+                color={
+                  kycStatus === 'COMPLETED'
+                    ? COLORS.primary
+                    : COLORS.accentDark
+                }
+              />
+              <Text style={styles.kycTitle}>{t('profile.bankKycTitle')}</Text>
+            </View>
+            <View
+              style={[
+                styles.kycStatusBadge,
+                kycStatus === 'COMPLETED'
+                  ? styles.kycBadgeCompleted
+                  : styles.kycBadgePending,
+              ]}
+            >
+              <Text
+                style={[
+                  styles.kycStatusText,
+                  kycStatus === 'COMPLETED'
+                    ? styles.kycTextCompleted
+                    : styles.kycTextPending,
+                ]}
+              >
+                {kycStatus === 'COMPLETED'
+                  ? t('profile.kycStatusCompleted')
+                  : t('profile.kycStatusPending')}
+              </Text>
+            </View>
+          </View>
+
+          {kycStatus === 'COMPLETED' && bankDetails ? (
+            <View style={styles.bankDetailBox}>
+              <View style={styles.bankDetailRow}>
+                <Ionicons
+                  name="business-outline"
+                  size={15}
+                  color={COLORS.textSecondary}
+                />
+                <Text style={styles.bankNameText}>{bankDetails.bankName}</Text>
+              </View>
+              <View style={styles.bankDetailRow}>
+                <Ionicons
+                  name="card-outline"
+                  size={15}
+                  color={COLORS.textSecondary}
+                />
+                <Text style={styles.maskedAcctText}>
+                  {bankDetails.accountNumberMasked}
+                </Text>
+              </View>
+              <Text style={styles.dbtHintText}>{t('profile.dbtReady')}</Text>
+            </View>
+          ) : (
+            <View style={styles.kycPendingBox}>
+              <Text style={styles.kycPendingNotice}>
+                {t('profile.pendingKycNotice')}
+              </Text>
+              {onOpenKyc && (
+                <TouchableOpacity
+                  style={styles.completeKycBtn}
+                  onPress={onOpenKyc}
+                  activeOpacity={0.8}
+                >
+                  <Text style={styles.completeKycBtnText}>
+                    {t('profile.completeKycNow')}
+                  </Text>
+                  <Ionicons
+                    name="arrow-forward"
+                    size={14}
+                    color={COLORS.textInverse}
+                  />
+                </TouchableOpacity>
+              )}
+            </View>
+          )}
         </View>
 
         {/* Language Selection */}
@@ -328,6 +426,112 @@ const styles = StyleSheet.create({
     fontWeight: '800',
     color: COLORS.primaryDark,
     marginTop: 2,
+  },
+  kycCard: {
+    backgroundColor: COLORS.surface,
+    borderRadius: RADIUS.lg,
+    padding: SPACING.md,
+    marginBottom: SPACING.lg,
+    borderWidth: 1,
+    borderColor: COLORS.border,
+    ...SHADOWS.card,
+  },
+  kycHeaderRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: SPACING.sm,
+  },
+  kycTitleLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+  },
+  kycTitle: {
+    fontSize: 14,
+    fontWeight: '800',
+    color: COLORS.textPrimary,
+  },
+  kycStatusBadge: {
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: RADIUS.full,
+  },
+  kycBadgeCompleted: {
+    backgroundColor: COLORS.primarySurface,
+    borderWidth: 1,
+    borderColor: '#86EFAC',
+  },
+  kycBadgePending: {
+    backgroundColor: '#FEF3C7',
+    borderWidth: 1,
+    borderColor: '#FDE68A',
+  },
+  kycStatusText: {
+    fontSize: 11,
+    fontWeight: '800',
+  },
+  kycTextCompleted: {
+    color: COLORS.primaryDark,
+  },
+  kycTextPending: {
+    color: '#B45309',
+  },
+  bankDetailBox: {
+    backgroundColor: COLORS.surfaceMuted,
+    borderRadius: RADIUS.md,
+    padding: SPACING.sm,
+    gap: 4,
+  },
+  bankDetailRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+  },
+  bankNameText: {
+    fontSize: 13,
+    fontWeight: '700',
+    color: COLORS.textPrimary,
+  },
+  maskedAcctText: {
+    fontSize: 13,
+    fontWeight: '600',
+    color: COLORS.textSecondary,
+    letterSpacing: 1,
+  },
+  dbtHintText: {
+    fontSize: 11,
+    color: COLORS.primary,
+    fontWeight: '600',
+    marginTop: 2,
+  },
+  kycPendingBox: {
+    backgroundColor: '#FFFBEB',
+    borderRadius: RADIUS.md,
+    padding: SPACING.sm,
+    borderWidth: 1,
+    borderColor: '#FEF3C7',
+  },
+  kycPendingNotice: {
+    fontSize: 12,
+    color: '#92400E',
+    lineHeight: 16,
+    marginBottom: SPACING.sm,
+  },
+  completeKycBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: COLORS.primary,
+    paddingVertical: 9,
+    paddingHorizontal: SPACING.md,
+    borderRadius: RADIUS.md,
+    gap: 6,
+  },
+  completeKycBtnText: {
+    fontSize: 13,
+    fontWeight: '800',
+    color: COLORS.textInverse,
   },
   logoutBtn: {
     flexDirection: 'row',

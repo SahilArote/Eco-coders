@@ -1,8 +1,11 @@
 import { create } from 'zustand';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import {
   Booking,
   Crop,
   FarmerProfile,
+  KycStatus,
+  BankDetails,
   NotificationItem,
   ProcurementCenter,
   ProcurementStatus,
@@ -10,6 +13,9 @@ import {
   TimeSlot,
 } from '../types';
 import i18n, { AppLanguage, changeAppLanguage, initializeLanguage } from '../i18n';
+import { maskAccountNumber } from '../services/authService';
+
+const AUTH_STORAGE_KEY = '@kisan_eprocure_auth_v1';
 
 interface AppState {
   // User Profile
@@ -19,9 +25,20 @@ interface AppState {
   initLanguage: () => Promise<void>;
   updateFarmerProfile: (profile: Partial<FarmerProfile>) => void;
 
-  // Auth State
+  // Auth & KYC State
   isAuthenticated: boolean;
-  login: () => void;
+  kycStatus: KycStatus;
+  bankDetails: BankDetails | null;
+  initAuthState: () => Promise<void>;
+  registerNewUser: (phone: string) => Promise<void>;
+  completeBankKyc: (details: {
+    accountHolderName: string;
+    bankName: string;
+    accountNumber: string;
+    ifscCode: string;
+  }) => Promise<void>;
+  skipBankKyc: () => Promise<void>;
+  login: (phone?: string) => void;
   logout: () => void;
 
   // Master Data
@@ -321,18 +338,30 @@ const INITIAL_NOTIFICATIONS: NotificationItem[] = [
   },
 ];
 
+const INITIAL_BANK_DETAILS: BankDetails = {
+  accountHolderName: 'Ramesh Balasaheb Patil',
+  bankName: 'State Bank of India',
+  accountNumberMasked: '•••• •••• •••• 4819',
+  ifscCode: 'SBIN0001234',
+  verifiedAt: '2026-09-01T10:00:00Z',
+};
+
+const INITIAL_FARMER: FarmerProfile = {
+  id: 'farmer-ramesh-01',
+  phone: '+91 98221 44589',
+  fullName: 'Ramesh Balasaheb Patil',
+  village: 'Ozar',
+  district: 'Nashik',
+  state: 'Maharashtra',
+  preferredLanguage: 'en',
+  landSizeAcres: 6.5,
+  registeredCrops: ['Wheat', 'Soybean', 'Chana'],
+  kycStatus: 'COMPLETED',
+  bankDetails: INITIAL_BANK_DETAILS,
+};
+
 export const useAppStore = create<AppState>((set, get) => ({
-  farmer: {
-    id: 'farmer-ramesh-01',
-    phone: '+91 98221 44589',
-    fullName: 'Ramesh Balasaheb Patil',
-    village: 'Ozar',
-    district: 'Nashik',
-    state: 'Maharashtra',
-    preferredLanguage: 'en',
-    landSizeAcres: 6.5,
-    registeredCrops: ['Wheat', 'Soybean', 'Chana'],
-  },
+  farmer: INITIAL_FARMER,
   language: 'en',
   setLanguage: (lang) => {
     changeAppLanguage(lang);
@@ -346,8 +375,166 @@ export const useAppStore = create<AppState>((set, get) => ({
     set((state) => ({ farmer: { ...state.farmer, ...profile } })),
 
   isAuthenticated: false,
-  login: () => set({ isAuthenticated: true }),
-  logout: () => set({ isAuthenticated: false }),
+  kycStatus: 'COMPLETED',
+  bankDetails: INITIAL_BANK_DETAILS,
+
+  initAuthState: async () => {
+    try {
+      const raw = await AsyncStorage.getItem(AUTH_STORAGE_KEY);
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        if (parsed && typeof parsed.isAuthenticated === 'boolean') {
+          const status = parsed.kycStatus || 'NOT_COMPLETED';
+          const bank = parsed.bankDetails || null;
+          set((state) => ({
+            isAuthenticated: parsed.isAuthenticated,
+            kycStatus: status,
+            bankDetails: bank,
+            farmer: {
+              ...state.farmer,
+              phone: parsed.phone || state.farmer.phone,
+              fullName: parsed.fullName || state.farmer.fullName,
+              kycStatus: status,
+              bankDetails: bank || undefined,
+            },
+          }));
+        }
+      }
+    } catch (error) {
+      // Fallback silently
+    }
+  },
+
+  registerNewUser: async (phone: string) => {
+    const formattedPhone = phone.startsWith('+91') ? phone : `+91 ${phone}`;
+    const newKycStatus: KycStatus = 'NOT_COMPLETED';
+    set((state) => ({
+      isAuthenticated: true,
+      kycStatus: newKycStatus,
+      bankDetails: null,
+      farmer: {
+        ...state.farmer,
+        phone: formattedPhone,
+        kycStatus: newKycStatus,
+        bankDetails: undefined,
+      },
+    }));
+    try {
+      await AsyncStorage.setItem(
+        AUTH_STORAGE_KEY,
+        JSON.stringify({
+          isAuthenticated: true,
+          phone: formattedPhone,
+          kycStatus: newKycStatus,
+          bankDetails: null,
+        })
+      );
+    } catch (error) {}
+  },
+
+  completeBankKyc: async ({ accountHolderName, bankName, accountNumber, ifscCode }) => {
+    const masked = maskAccountNumber(accountNumber);
+    const bankInfo: BankDetails = {
+      accountHolderName,
+      bankName,
+      accountNumberMasked: masked,
+      ifscCode: ifscCode.toUpperCase().trim(),
+      verifiedAt: new Date().toISOString(),
+    };
+    set((state) => ({
+      kycStatus: 'COMPLETED',
+      bankDetails: bankInfo,
+      farmer: {
+        ...state.farmer,
+        fullName: accountHolderName || state.farmer.fullName,
+        kycStatus: 'COMPLETED',
+        bankDetails: bankInfo,
+      },
+      activeBooking: state.activeBooking
+        ? {
+            ...state.activeBooking,
+            paymentDetails: state.activeBooking.paymentDetails
+              ? {
+                  ...state.activeBooking.paymentDetails,
+                  bankName,
+                  accountMasked: masked,
+                }
+              : state.activeBooking.paymentDetails,
+          }
+        : state.activeBooking,
+    }));
+    try {
+      const current = get();
+      await AsyncStorage.setItem(
+        AUTH_STORAGE_KEY,
+        JSON.stringify({
+          isAuthenticated: true,
+          phone: current.farmer.phone,
+          fullName: current.farmer.fullName,
+          kycStatus: 'COMPLETED',
+          bankDetails: bankInfo,
+        })
+      );
+    } catch (error) {}
+  },
+
+  skipBankKyc: async () => {
+    set((state) => ({
+      kycStatus: 'NOT_COMPLETED',
+      farmer: {
+        ...state.farmer,
+        kycStatus: 'NOT_COMPLETED',
+      },
+    }));
+    try {
+      const current = get();
+      await AsyncStorage.setItem(
+        AUTH_STORAGE_KEY,
+        JSON.stringify({
+          isAuthenticated: true,
+          phone: current.farmer.phone,
+          fullName: current.farmer.fullName,
+          kycStatus: 'NOT_COMPLETED',
+          bankDetails: null,
+        })
+      );
+    } catch (error) {}
+  },
+
+  login: (phone?: string) => {
+    const current = get();
+    const phoneToUse = phone
+      ? phone.startsWith('+91')
+        ? phone
+        : `+91 ${phone}`
+      : current.farmer.phone;
+    set((state) => ({
+      isAuthenticated: true,
+      farmer: {
+        ...state.farmer,
+        phone: phoneToUse,
+      },
+    }));
+    try {
+      AsyncStorage.setItem(
+        AUTH_STORAGE_KEY,
+        JSON.stringify({
+          isAuthenticated: true,
+          phone: phoneToUse,
+          fullName: current.farmer.fullName,
+          kycStatus: current.kycStatus,
+          bankDetails: current.bankDetails,
+        })
+      );
+    } catch (error) {}
+  },
+
+  logout: () => {
+    set({ isAuthenticated: false });
+    try {
+      AsyncStorage.removeItem(AUTH_STORAGE_KEY);
+    } catch (error) {}
+  },
 
   crops: INITIAL_CROPS,
   centers: INITIAL_CENTERS,
@@ -542,13 +729,20 @@ export const useAppStore = create<AppState>((set, get) => ({
 
   clearAllNotifications: () => set({ notifications: [] }),
 
-  resetToInitialDemo: () =>
+  resetToInitialDemo: () => {
+    try {
+      AsyncStorage.removeItem(AUTH_STORAGE_KEY);
+    } catch (e) {}
     set({
+      farmer: INITIAL_FARMER,
+      kycStatus: 'COMPLETED',
+      bankDetails: INITIAL_BANK_DETAILS,
       crops: INITIAL_CROPS,
       centers: INITIAL_CENTERS,
       slots: INITIAL_SLOTS,
       activeBooking: INITIAL_BOOKING,
       queueState: INITIAL_QUEUE,
       notifications: INITIAL_NOTIFICATIONS,
-    }),
+    });
+  },
 }));

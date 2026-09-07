@@ -19,6 +19,9 @@ import { ProcurementCenter, TimeSlot } from './src/types';
 // Screens
 import { SplashScreen } from './src/screens/splash/SplashScreen';
 import { LoginScreen } from './src/screens/auth/LoginScreen';
+import { RegistrationScreen } from './src/screens/auth/RegistrationScreen';
+import { OtpVerificationScreen } from './src/screens/auth/OtpVerificationScreen';
+import { BankKycScreen } from './src/screens/auth/BankKycScreen';
 import { ProfileSetupScreen } from './src/screens/auth/ProfileSetupScreen';
 import { HomeScreen } from './src/screens/home/HomeScreen';
 import { CenterListScreen } from './src/screens/discovery/CenterListScreen';
@@ -33,6 +36,7 @@ import { FeedbackScreen } from './src/screens/profile/FeedbackScreen';
 import { ProfileScreen } from './src/screens/profile/ProfileScreen';
 
 type Tab = 'HOME' | 'CENTERS' | 'QUEUE' | 'PROFILE';
+type AuthScreen = 'LOGIN' | 'REGISTER' | 'OTP_VERIFY' | 'BANK_KYC_ONBOARDING';
 type ModalScreen =
   | null
   | 'SLOT_PICKER'
@@ -42,12 +46,15 @@ type ModalScreen =
   | 'PAYMENT_STATUS'
   | 'NOTIFICATIONS'
   | 'FEEDBACK'
-  | 'EDIT_PROFILE';
+  | 'EDIT_PROFILE'
+  | 'BANK_KYC';
 
 export default function App() {
   const [isInitializing, setIsInitializing] = useState(true);
   const [activeTab, setActiveTab] = useState<Tab>('HOME');
   const [modalScreen, setModalScreen] = useState<ModalScreen>(null);
+  const [authScreen, setAuthScreen] = useState<AuthScreen>('LOGIN');
+  const [regPhone, setRegPhone] = useState('');
 
   // Flow State
   const [selectedCenter, setSelectedCenter] = useState<ProcurementCenter | null>(
@@ -65,11 +72,13 @@ export default function App() {
     activeBooking,
     notifications,
     initLanguage,
+    initAuthState,
   } = useAppStore();
   const unreadCount = notifications.filter((n) => !n.isRead).length;
 
   useEffect(() => {
     initLanguage();
+    initAuthState();
   }, []);
 
   // 1. App Startup: Branded Animated Splash / Loading Experience
@@ -81,13 +90,64 @@ export default function App() {
     );
   }
 
-  // 2. Authentication-First Guard: First screen after splash is ALWAYS Login for unauthenticated users
-  if (!isAuthenticated) {
+  // 2. Authentication Guard: Handles Login, Register, OTP Verification, and optional Onboarding KYC
+  if (!isAuthenticated || authScreen === 'BANK_KYC_ONBOARDING') {
+    if (authScreen === 'BANK_KYC_ONBOARDING') {
+      return (
+        <SafeAreaProvider>
+          <SafeAreaView style={styles.safeArea}>
+            <StatusBar barStyle="dark-content" backgroundColor={COLORS.background} />
+            <BankKycScreen
+              isOnboarding={true}
+              onComplete={() => setAuthScreen('LOGIN')}
+              onSkip={() => setAuthScreen('LOGIN')}
+            />
+          </SafeAreaView>
+        </SafeAreaProvider>
+      );
+    }
+
+    if (authScreen === 'REGISTER') {
+      return (
+        <SafeAreaProvider>
+          <SafeAreaView style={styles.safeArea}>
+            <StatusBar barStyle="dark-content" backgroundColor={COLORS.background} />
+            <RegistrationScreen
+              onNavigateToLogin={() => setAuthScreen('LOGIN')}
+              onRegisterSuccess={(phone) => {
+                setRegPhone(phone);
+                setAuthScreen('OTP_VERIFY');
+              }}
+            />
+          </SafeAreaView>
+        </SafeAreaProvider>
+      );
+    }
+
+    if (authScreen === 'OTP_VERIFY') {
+      return (
+        <SafeAreaProvider>
+          <SafeAreaView style={styles.safeArea}>
+            <StatusBar barStyle="dark-content" backgroundColor={COLORS.background} />
+            <OtpVerificationScreen
+              phone={regPhone}
+              onBack={() => setAuthScreen('REGISTER')}
+              onVerifySuccess={() => setAuthScreen('BANK_KYC_ONBOARDING')}
+            />
+          </SafeAreaView>
+        </SafeAreaProvider>
+      );
+    }
+
+    // Default: LOGIN
     return (
       <SafeAreaProvider>
         <SafeAreaView style={styles.safeArea}>
           <StatusBar barStyle="dark-content" backgroundColor={COLORS.background} />
-          <LoginScreen onLoginSuccess={login} />
+          <LoginScreen
+            onLoginSuccess={() => setAuthScreen('LOGIN')}
+            onNavigateToRegister={() => setAuthScreen('REGISTER')}
+          />
         </SafeAreaView>
       </SafeAreaProvider>
     );
@@ -190,6 +250,15 @@ export default function App() {
           />
         );
 
+      case 'BANK_KYC':
+        return (
+          <BankKycScreen
+            isOnboarding={false}
+            onClose={() => setModalScreen(null)}
+            onComplete={() => setModalScreen(null)}
+          />
+        );
+
       default:
         return null;
     }
@@ -212,6 +281,7 @@ export default function App() {
             onNavigateToCenters={() => setActiveTab('CENTERS')}
             onNavigateToNotifications={() => setModalScreen('NOTIFICATIONS')}
             onNavigateToGrievance={() => setModalScreen('FEEDBACK')}
+            onNavigateToKyc={() => setModalScreen('BANK_KYC')}
           />
         );
 
@@ -238,7 +308,11 @@ export default function App() {
           <ProfileScreen
             onEditProfile={() => setModalScreen('EDIT_PROFILE')}
             onOpenGrievance={() => setModalScreen('FEEDBACK')}
-            onLogout={logout}
+            onOpenKyc={() => setModalScreen('BANK_KYC')}
+            onLogout={() => {
+              logout();
+              setAuthScreen('LOGIN');
+            }}
           />
         );
     }

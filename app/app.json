@@ -26,6 +26,15 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "plugins": [
+      "expo-font"
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "e1b52a13-08d4-4872-a6ef-a4224a6ac99f"
+      }
+    },
+    "owner": "sahil.arote"
   }
 }

@@ -17,33 +17,58 @@ import { AppButton } from '../../components/AppButton';
 import { FarmerAppLogo } from '../../components/FarmerAppLogo';
 import { useAppStore } from '../../state/useAppStore';
 
+import { authService, isValidIndianMobile, isValidPassword } from '../../services/authService';
+
 interface LoginScreenProps {
   onLoginSuccess: () => void;
+  onNavigateToRegister?: () => void;
 }
 
-export const LoginScreen: React.FC<LoginScreenProps> = ({ onLoginSuccess }) => {
+export const LoginScreen: React.FC<LoginScreenProps> = ({
+  onLoginSuccess,
+  onNavigateToRegister,
+}) => {
   const { t } = useTranslation();
-  const { farmer, language, setLanguage } = useAppStore();
+  const { farmer, language, setLanguage, login } = useAppStore();
   const [phoneNumber, setPhoneNumber] = useState('9822144589');
-  const [otpStep, setOtpStep] = useState(false);
-  const [otp, setOtp] = useState('');
-  const [timer, setTimer] = useState(30);
+  const [password, setPassword] = useState('kisan123');
+  const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  const handleSendOtp = () => {
-    if (phoneNumber.length >= 10) {
-      setOtpStep(true);
-      setOtp('8492'); // Auto-fill demo OTP for instant evaluation
+  const handleLogin = async () => {
+    setErrorMessage(null);
+
+    const cleanedPhone = phoneNumber.trim();
+    if (!isValidIndianMobile(cleanedPhone)) {
+      setErrorMessage(t('auth.validationMobile'));
+      return;
     }
-  };
 
-  const handleVerifyOtp = () => {
-    if (otp === '8492' || otp.length === 4) {
-      onLoginSuccess();
+    if (!isValidPassword(password)) {
+      setErrorMessage(t('auth.passwordTooShort'));
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const res = await authService.login(cleanedPhone, password);
+      if (res.success) {
+        login(cleanedPhone);
+        onLoginSuccess();
+      } else {
+        setErrorMessage(t('auth.passwordTooShort'));
+      }
+    } catch (e) {
+      setErrorMessage(t('auth.validationMobile'));
+    } finally {
+      setLoading(false);
     }
   };
 
   const handleQuickDemoLogin = () => {
     setPhoneNumber('9822144589');
+    login('9822144589');
     onLoginSuccess();
   };
 
@@ -101,62 +126,82 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ onLoginSuccess }) => {
 
         {/* Login Form Card */}
         <View style={styles.formCard}>
-          <Text style={styles.formHeader}>
-            {otpStep ? t('auth.enterOtpTitle') : t('auth.loginTitle')}
-          </Text>
-          <Text style={styles.formSubHeader}>
-            {otpStep
-              ? t('auth.otpSentTo', { phone: phoneNumber })
-              : t('auth.loginSubtitle')}
-          </Text>
+          <Text style={styles.formHeader}>{t('auth.loginTitle')}</Text>
+          <Text style={styles.formSubHeader}>{t('auth.loginSubtitle')}</Text>
 
-          {!otpStep ? (
-            <View style={styles.inputContainer}>
-              <View style={styles.prefixBox}>
-                <Text style={styles.prefixText}>+91</Text>
-              </View>
-              <TextInput
-                style={styles.phoneInput}
-                placeholder={t('auth.enterMobilePlaceholder')}
-                placeholderTextColor={COLORS.textMuted}
-                keyboardType="phone-pad"
-                maxLength={10}
-                value={phoneNumber}
-                onChangeText={setPhoneNumber}
-              />
-            </View>
-          ) : (
-            <View style={styles.otpContainer}>
-              <TextInput
-                style={styles.otpInput}
-                placeholder="• • • •"
-                placeholderTextColor={COLORS.textMuted}
-                keyboardType="number-pad"
-                maxLength={4}
-                value={otp}
-                onChangeText={setOtp}
-                textAlign="center"
-              />
-              <View style={styles.demoOtpHint}>
-                <Ionicons name="information-circle-outline" size={14} color={COLORS.primary} />
-                <Text style={styles.demoOtpText}>{t('auth.demoOtpHint')}</Text>
-              </View>
+          {/* Validation Error Banner */}
+          {errorMessage && (
+            <View style={styles.errorBanner}>
+              <Ionicons name="alert-circle" size={18} color={COLORS.danger} />
+              <Text style={styles.errorText}>{errorMessage}</Text>
             </View>
           )}
 
+          {/* Mobile Number Field */}
+          <Text style={styles.inputLabel}>{t('auth.mobileNumber')}</Text>
+          <View style={styles.inputContainer}>
+            <View style={styles.prefixBox}>
+              <Text style={styles.prefixText}>+91</Text>
+            </View>
+            <TextInput
+              style={styles.phoneInput}
+              placeholder={t('auth.enterMobilePlaceholder')}
+              placeholderTextColor={COLORS.textMuted}
+              keyboardType="phone-pad"
+              maxLength={10}
+              value={phoneNumber}
+              onChangeText={(val) => {
+                setPhoneNumber(val);
+                if (errorMessage) setErrorMessage(null);
+              }}
+            />
+          </View>
+
+          {/* Password Field */}
+          <Text style={styles.inputLabel}>{t('auth.password')}</Text>
+          <View style={styles.inputContainer}>
+            <TextInput
+              style={styles.textInput}
+              placeholder={t('auth.enterPasswordPlaceholder')}
+              placeholderTextColor={COLORS.textMuted}
+              secureTextEntry={!showPassword}
+              value={password}
+              onChangeText={(val) => {
+                setPassword(val);
+                if (errorMessage) setErrorMessage(null);
+              }}
+            />
+            <TouchableOpacity
+              style={styles.eyeBtn}
+              onPress={() => setShowPassword(!showPassword)}
+            >
+              <Ionicons
+                name={showPassword ? 'eye-off-outline' : 'eye-outline'}
+                size={20}
+                color={COLORS.textSecondary}
+              />
+            </TouchableOpacity>
+          </View>
+
+          {/* Login Button */}
           <AppButton
-            title={otpStep ? t('auth.verifyOtp') : t('auth.sendOtp')}
-            onPress={otpStep ? handleVerifyOtp : handleSendOtp}
+            title={loading ? t('auth.loggingIn') : t('auth.loginBtn')}
+            onPress={handleLogin}
+            loading={loading}
             size="lg"
             style={styles.actionBtn}
           />
 
-          {otpStep && (
+          {/* Register Link */}
+          {onNavigateToRegister && (
             <TouchableOpacity
-              style={styles.changeNumberBtn}
-              onPress={() => setOtpStep(false)}
+              style={styles.registerLinkBtn}
+              onPress={onNavigateToRegister}
+              activeOpacity={0.7}
             >
-              <Text style={styles.changeNumberText}>{t('auth.editPhone')}</Text>
+              <Text style={styles.registerLinkText}>
+                {t('auth.newFarmerRegister')}
+              </Text>
             </TouchableOpacity>
           )}
 
@@ -332,35 +377,54 @@ const styles = StyleSheet.create({
     color: COLORS.textPrimary,
     fontWeight: '600',
   },
-  otpContainer: {
-    alignItems: 'center',
-    marginBottom: SPACING.md,
-  },
-  otpInput: {
-    width: '100%',
-    borderWidth: 2,
-    borderColor: COLORS.primary,
-    borderRadius: RADIUS.md,
-    paddingVertical: 14,
-    fontSize: 24,
-    fontWeight: '800',
-    color: COLORS.primary,
-    backgroundColor: COLORS.primarySurface,
-    letterSpacing: 10,
-  },
-  demoOtpHint: {
+  errorBanner: {
     flexDirection: 'row',
     alignItems: 'center',
+    backgroundColor: COLORS.dangerSurface,
+    borderWidth: 1,
+    borderColor: '#FECACA',
+    borderRadius: RADIUS.md,
+    padding: SPACING.md,
+    marginBottom: SPACING.md,
+  },
+  errorText: {
+    fontSize: 12,
+    fontWeight: '600',
+    color: COLORS.danger,
+    marginLeft: 8,
+    flex: 1,
+  },
+  inputLabel: {
+    fontSize: 13,
+    fontWeight: '700',
+    color: COLORS.textPrimary,
+    marginBottom: 6,
     marginTop: SPACING.sm,
   },
-  demoOtpText: {
-    fontSize: 12,
-    color: COLORS.primary,
+  textInput: {
+    flex: 1,
+    paddingHorizontal: SPACING.md,
+    paddingVertical: 13,
+    fontSize: 15,
+    color: COLORS.textPrimary,
     fontWeight: '600',
-    marginLeft: 4,
+  },
+  eyeBtn: {
+    paddingHorizontal: SPACING.md,
+    paddingVertical: 13,
   },
   actionBtn: {
     marginTop: SPACING.lg,
+  },
+  registerLinkBtn: {
+    alignItems: 'center',
+    paddingVertical: SPACING.md,
+    marginTop: SPACING.xs,
+  },
+  registerLinkText: {
+    fontSize: 14,
+    fontWeight: '700',
+    color: COLORS.primary,
   },
   changeNumberBtn: {
     alignItems: 'center',

@@ -11,6 +11,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useTranslation } from 'react-i18next';
 import { COLORS, RADIUS, SHADOWS, SPACING } from '../../theme';
 import { StatusBadge } from '../../components/StatusBadge';
+import { KycReminderBanner } from '../../components/KycReminderBanner';
 import { useAppStore } from '../../state/useAppStore';
 
 interface HomeScreenProps {
@@ -22,6 +23,7 @@ interface HomeScreenProps {
   onNavigateToCenters: () => void;
   onNavigateToNotifications: () => void;
   onNavigateToGrievance: () => void;
+  onNavigateToKyc?: () => void;
 }
 
 export const HomeScreen: React.FC<HomeScreenProps> = ({
@@ -33,10 +35,18 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
   onNavigateToCenters,
   onNavigateToNotifications,
   onNavigateToGrievance,
+  onNavigateToKyc,
 }) => {
   const { t } = useTranslation();
-  const { farmer, activeBooking, queueState, crops, notifications, centers } =
-    useAppStore();
+  const {
+    farmer,
+    activeBooking,
+    queueState,
+    crops,
+    notifications,
+    centers,
+    kycStatus,
+  } = useAppStore();
 
   const unreadNotifsCount = notifications.filter((n) => !n.isRead).length;
 
@@ -75,6 +85,11 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
+        {/* Bank KYC Reminder Banner (Visible only when KYC is incomplete) */}
+        {kycStatus === 'NOT_COMPLETED' && onNavigateToKyc && (
+          <KycReminderBanner onCompleteKyc={onNavigateToKyc} />
+        )}
+
         {/* Active Booking Hero Card */}
         {activeBooking ? (
           <LinearGradient

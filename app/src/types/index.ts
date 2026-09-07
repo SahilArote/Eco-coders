@@ -2,6 +2,16 @@
 
 export type Role = 'FARMER' | 'CENTER_OPERATOR' | 'ADMIN';
 
+export type KycStatus = 'NOT_COMPLETED' | 'COMPLETED';
+
+export interface BankDetails {
+  accountHolderName: string;
+  bankName: string;
+  accountNumberMasked: string;
+  ifscCode: string;
+  verifiedAt?: string;
+}
+
 export interface FarmerProfile {
   id: string;
   phone: string;
@@ -12,6 +22,8 @@ export interface FarmerProfile {
   preferredLanguage: 'en' | 'hi' | 'mr';
   landSizeAcres: number;
   registeredCrops: string[];
+  kycStatus?: KycStatus;
+  bankDetails?: BankDetails;
 }
 
 export interface Crop {
