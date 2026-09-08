@@ -1,4 +1,4 @@
-# Krishi-Setu APMC — Intelligent Agricultural Procurement & Queue Management System
+# Kraya Sutra APMC — Intelligent Agricultural Procurement & Queue Management System
 
 > **Enterprise Mandi Operations, Queue Automation, Quality Assaying & Direct Benefit Transfer Platform**  
 > *Built for Ministry of Consumer Affairs, Food & Public Distribution / SIH Problem Statement 26032*
@@ -7,7 +7,7 @@
 
 ## 🌾 Overview
 
-**Krishi-Setu APMC** is a high-density, frontend-driven operational ERP and digital mandi management platform built specifically for **APMC Mandi Staff, Gate Operators, Weighbridge Operators, Laboratory Assayers, Auction Officers, Procurement Officers, Accounts Officers, and Mandi Supervisors/Admins**.
+**Kraya Sutra APMC** is a high-density, frontend-driven operational ERP and digital mandi management platform built specifically for **APMC Mandi Staff, Gate Operators, Weighbridge Operators, Laboratory Assayers, Auction Officers, Procurement Officers, Accounts Officers, and Mandi Supervisors/Admins**.
 
 The platform streamlines and digitizes physical market yard operations: from vehicle gate entry and waiting queues to automated dual-scale weighment, Fair Average Quality (FAQ) grading, live Mandi auction bidding, lot procurement clearance, and PFMS Direct Benefit Transfer (DBT) bank disbursements.
 
@@ -165,7 +165,7 @@ On the `/login` screen, click any of the **7 Desk Cards** to auto-populate demo 
 | **Auction / Mandi Officer** | `auction.officer@apmc.gov.in` | `/dashboard/auction` |
 | **Procurement Officer** | `procurement.officer@apmc.gov.in` | `/dashboard/procurement` |
 | **Accounts / Payment Officer** | `accounts.officer@apmc.gov.in` | `/dashboard/accounts` |
-| **Mandi Supervisor / Admin** | `admin@krishisetu.gov.in` | `/dashboard/admin` |
+| **Mandi Supervisor / Admin** | `admin@krayasutra.gov.in` | `/dashboard/admin` |
 
 *Password for all demo accounts*: `apmc@2026`
 

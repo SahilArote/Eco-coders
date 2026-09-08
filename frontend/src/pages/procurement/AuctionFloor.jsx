@@ -1,21 +1,26 @@
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { 
   Gavel, 
   TrendingUp, 
   CheckCircle2, 
   Search, 
-  Plus
+  Plus,
+  Clock
 } from 'lucide-react';
 import { useProcurement } from '../../context/ProcurementContext';
 import MetricCard from '../../components/common/MetricCard';
 import StatusBadge from '../../components/common/StatusBadge';
 import DetailDrawer from '../../components/common/DetailDrawer';
 
-export default function AuctionFloor() {
+export default function AuctionFloor({ defaultTab = 'live' }) {
   const { auctions, currentCenter, placeBid, closeAuction } = useProcurement();
 
+  const activeTab = defaultTab;
+
   const [searchQuery, setSearchQuery] = useState('');
-  const [statusFilter, setStatusFilter] = useState('ALL');
+  const initialStatusFilter = defaultTab === 'completed' ? 'SOLD' : defaultTab === 'live' ? 'IN_AUCTION' : 'ALL';
+  const [statusFilter, setStatusFilter] = useState(initialStatusFilter);
   const [selectedAuction, setSelectedAuction] = useState(null);
   const [bidIncrement, setBidIncrement] = useState(50);
   const [buyerName, setBuyerName] = useState('Mahagrains Commercial Trading Ltd.');
@@ -35,12 +40,14 @@ export default function AuctionFloor() {
     setSelectedAuction(prev => prev ? ({ ...prev, status: 'SOLD' }) : null);
   };
 
+  const effectiveFilter = activeTab === 'completed' ? 'SOLD' : activeTab === 'live' ? 'IN_AUCTION' : statusFilter;
+
   const filteredAuctions = auctions.filter(a => {
     const matchesSearch = a.lotNumber.toLowerCase().includes(searchQuery.toLowerCase()) ||
       a.farmerName.toLowerCase().includes(searchQuery.toLowerCase()) ||
       a.commodity.toLowerCase().includes(searchQuery.toLowerCase()) ||
       (a.highestBidderName && a.highestBidderName.toLowerCase().includes(searchQuery.toLowerCase()));
-    const matchesStatus = statusFilter === 'ALL' || a.status === statusFilter;
+    const matchesStatus = effectiveFilter === 'ALL' || a.status === effectiveFilter;
     return matchesSearch && matchesStatus;
   });
 
@@ -48,12 +55,23 @@ export default function AuctionFloor() {
   const soldCount = auctions.filter(a => a.status === 'SOLD').length;
   const totalVolumeInAuction = auctions.reduce((sum, a) => sum + (a.quantityQuintals || 0), 0).toFixed(1);
 
+  // Flatten bid histories for the history view
+  const allBids = auctions.flatMap(a => 
+    (a.bidsHistory || []).map(b => ({
+      ...b,
+      lotNumber: a.lotNumber,
+      commodity: a.commodity,
+      farmerName: a.farmerName,
+      auctionId: a.id
+    }))
+  );
+
   return (
     <div className="space-y-6">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900">Mandi Auction Floor & Price Discovery</h1>
+          <h1 className="text-2xl font-bold text-slate-900">Mandi Auction Floor &amp; Price Discovery</h1>
           <p className="text-xs text-slate-500 mt-0.5">
             {currentCenter.name} • Government MSP Floor Protected Bidding Platform
           </p>
@@ -64,6 +82,45 @@ export default function AuctionFloor() {
             <Gavel className="w-3.5 h-3.5" />
             Auction Round: Rabi 2026-03
           </span>
+        </div>
+      </div>
+
+      {/* Sub-tab Navigation */}
+      <div className="flex border-b border-slate-200">
+        <div className="flex gap-2">
+          <Link
+            to="/procurement/auctions"
+            className={`flex items-center gap-2 px-4 py-2 text-xs font-bold border-b-2 transition-all ${
+              activeTab === 'live'
+                ? 'border-purple-600 text-purple-700 bg-purple-50/50'
+                : 'border-transparent text-slate-500 hover:text-slate-800'
+            }`}
+          >
+            <Gavel className="size-3.5" />
+            <span>Live Auctions ({activeCount})</span>
+          </Link>
+          <Link
+            to="/procurement/auctions/history"
+            className={`flex items-center gap-2 px-4 py-2 text-xs font-bold border-b-2 transition-all ${
+              activeTab === 'history'
+                ? 'border-purple-600 text-purple-700 bg-purple-50/50'
+                : 'border-transparent text-slate-500 hover:text-slate-800'
+            }`}
+          >
+            <Clock className="size-3.5" />
+            <span>Bid History</span>
+          </Link>
+          <Link
+            to="/procurement/auctions/completed"
+            className={`flex items-center gap-2 px-4 py-2 text-xs font-bold border-b-2 transition-all ${
+              activeTab === 'completed'
+                ? 'border-purple-600 text-purple-700 bg-purple-50/50'
+                : 'border-transparent text-slate-500 hover:text-slate-800'
+            }`}
+          >
+            <CheckCircle2 className="size-3.5" />
+            <span>Completed Auctions ({soldCount})</span>
+          </Link>
         </div>
       </div>
 
@@ -99,15 +156,71 @@ export default function AuctionFloor() {
         />
       </div>
 
-      {/* Main Auction Table & Filters */}
+      {/* Bid History Table View */}
+      {activeTab === 'history' ? (
+        <div className="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs space-y-4">
+          <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+            <div>
+              <h3 className="font-bold text-slate-900 text-sm">Commercial Bid Audit Trail</h3>
+              <p className="text-[11px] text-slate-400">Chronological history of competitive trader offers placed across active auction rounds.</p>
+            </div>
+            <span className="text-xs font-mono font-bold px-2.5 py-1 rounded bg-purple-100 text-purple-800">
+              {allBids.length} Total Bids Logged
+            </span>
+          </div>
+
+          <div className="overflow-x-auto">
+            <table className="w-full text-left text-xs border-collapse">
+              <thead>
+                <tr className="border-b border-slate-100 text-[11px] uppercase tracking-wider text-slate-400 font-semibold">
+                  <th className="pb-2.5">Lot Number</th>
+                  <th className="pb-2.5">Farmer</th>
+                  <th className="pb-2.5">Commodity</th>
+                  <th className="pb-2.5">Commercial Trader</th>
+                  <th className="pb-2.5 text-right">Offer Amount</th>
+                  <th className="pb-2.5 text-right">Time</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100">
+                {allBids.length === 0 ? (
+                  <tr>
+                    <td colSpan={6} className="py-8 text-center text-slate-400">
+                      No bids recorded in this round yet.
+                    </td>
+                  </tr>
+                ) : (
+                  allBids.map((b, idx) => (
+                    <tr key={b.id || idx} className="hover:bg-slate-50">
+                      <td className="py-3 font-mono font-bold text-slate-900">{b.lotNumber}</td>
+                      <td className="py-3">{b.farmerName}</td>
+                      <td className="py-3 font-medium">{b.commodity}</td>
+                      <td className="py-3 font-semibold text-purple-900">{b.bidderName}</td>
+                      <td className="py-3 text-right font-mono font-bold text-emerald-700">
+                        ₹{b.bidAmount?.toLocaleString('en-IN')} / Qtl
+                      </td>
+                      <td className="py-3 text-right text-slate-400">{b.time}</td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      ) : (
+      /* Main Auction Table & Filters */
       <div className="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs space-y-4">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-100">
           <div>
-            <h3 className="font-bold text-slate-900 text-sm">Live Mandi Bidding Schedule</h3>
-            <p className="text-[11px] text-slate-400">Click any auction lot to inspect bids and place simulated trader offers.</p>
+            <h3 className="font-bold text-slate-900 text-sm">
+              {activeTab === 'completed' ? 'Completed & Allotted Auctions' : 'Live Mandi Bidding Schedule'}
+            </h3>
+            <p className="text-[11px] text-slate-400">
+              {activeTab === 'completed' ? 'Historical record of closed auctions and winning buyer allotments.' : 'Click any auction lot to inspect bids and place simulated trader offers.'}
+            </p>
           </div>
 
           <div className="flex items-center gap-2">
+            {activeTab !== 'completed' && activeTab !== 'live' && (
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
@@ -118,6 +231,7 @@ export default function AuctionFloor() {
               <option value="UPCOMING">Upcoming</option>
               <option value="SOLD">Sold</option>
             </select>
+            )}
 
             <div className="relative w-64">
               <Search className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
@@ -138,12 +252,13 @@ export default function AuctionFloor() {
               <tr className="border-b border-slate-100 text-[11px] uppercase tracking-wider text-slate-400 font-semibold">
                 <th className="pb-2.5">Auction ID</th>
                 <th className="pb-2.5">Lot Number</th>
-                <th className="pb-2.5">Farmer Beneficiary</th>
-                <th className="pb-2.5">Commodity & Grade</th>
-                <th className="pb-2.5">Quantity</th>
-                <th className="pb-2.5">MSP Reserve (₹)</th>
-                <th className="pb-2.5">Current Highest Bid</th>
-                <th className="pb-2.5">Top Bidder Entity</th>
+                <th className="pb-2.5">Farmer Name</th>
+                <th className="pb-2.5">Commodity</th>
+                <th className="pb-2.5 text-right">Quantity</th>
+                <th className="pb-2.5 text-right">Reserve (MSP)</th>
+                <th className="pb-2.5 text-right">Current High Bid</th>
+                <th className="pb-2.5">Highest Bidder</th>
+                <th className="pb-2.5 text-center">Bids Count</th>
                 <th className="pb-2.5">Status</th>
                 <th className="pb-2.5 text-right">Action</th>
               </tr>
@@ -151,34 +266,23 @@ export default function AuctionFloor() {
             <tbody className="divide-y divide-slate-100">
               {filteredAuctions.map((auc) => {
                 return (
-                  <tr key={auc.id} className="hover:bg-slate-50/70">
-                    <td className="py-2.5 font-mono font-bold text-slate-900">
-                      {auc.id}
+                  <tr key={auc.id} className="hover:bg-slate-50 transition-colors">
+                    <td className="py-2.5 font-mono font-bold text-slate-900">{auc.id}</td>
+                    <td className="py-2.5 font-mono text-purple-700 font-semibold">{auc.lotNumber}</td>
+                    <td className="py-2.5 font-medium text-slate-800">{auc.farmerName}</td>
+                    <td className="py-2.5 font-semibold text-slate-900">{auc.commodity}</td>
+                    <td className="py-2.5 text-right font-mono font-medium">{auc.quantityQuintals} Qtl</td>
+                    <td className="py-2.5 text-right font-mono text-slate-500">₹{auc.minimumPrice?.toLocaleString('en-IN')}</td>
+                    <td className="py-2.5 text-right font-mono font-bold text-emerald-600">
+                      ₹{auc.currentHighestBid?.toLocaleString('en-IN')}
                     </td>
-                    <td className="py-2.5">
-                      <span className="font-mono font-bold text-purple-800 bg-purple-50 px-2 py-0.5 rounded border border-purple-200">
-                        {auc.lotNumber}
+                    <td className="py-2.5 font-medium text-slate-700">
+                      {auc.highestBidderName || <span className="text-slate-400 italic">No Bids Yet</span>}
+                    </td>
+                    <td className="py-2.5 text-center">
+                      <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-slate-100 text-slate-700">
+                        {auc.bidsCount} offers
                       </span>
-                    </td>
-                    <td className="py-2.5">
-                      <span className="font-semibold text-slate-900 block">{auc.farmerName}</span>
-                      <span className="text-[10px] text-slate-400">{auc.village}, {auc.district}</span>
-                    </td>
-                    <td className="py-2.5">
-                      <span className="text-slate-800 font-medium block">{auc.commodity}</span>
-                      <span className="text-[10px] text-emerald-700 font-bold">{auc.grade}</span>
-                    </td>
-                    <td className="py-2.5 font-mono text-slate-800">
-                      {auc.quantityQuintals} Qtl
-                    </td>
-                    <td className="py-2.5 font-mono text-slate-500">
-                      ₹{auc.minimumPrice}
-                    </td>
-                    <td className="py-2.5 font-mono font-bold text-amber-700 text-sm">
-                      ₹{auc.currentHighestBid}
-                    </td>
-                    <td className="py-2.5 text-slate-700 font-medium">
-                      {auc.highestBidderName || 'Awaiting Bid'}
                     </td>
                     <td className="py-2.5">
                       <StatusBadge status={auc.status} />
@@ -204,6 +308,7 @@ export default function AuctionFloor() {
           <span className="font-semibold text-purple-700">Mandi Commercial Trading Floor Verified</span>
         </div>
       </div>
+      )}
 
       {/* Slide-Over Bidding & Allotment Drawer */}
       <DetailDrawer

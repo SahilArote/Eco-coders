@@ -1,14 +1,22 @@
 import { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import {
   Scale,
-  Calculator
+  Calculator,
+  Clock,
+  CheckCircle2,
+  Printer,
+  ArrowRight
 } from 'lucide-react';
 import { useProcurement } from '../../context/ProcurementContext';
 import StatusBadge from '../../components/common/StatusBadge';
 import WeighmentSlipPrint from '../../components/documents/WeighmentSlipPrint';
 
-export default function Weighbridge() {
+export default function Weighbridge({ defaultTab = 'scale' }) {
   const { lots, recordWeighment } = useProcurement();
+  const navigate = useNavigate();
+
+  const activeTab = defaultTab;
 
   // Selected Lot for Weighment (Default LOT-2026-001)
   const [selectedLotId, setSelectedLotId] = useState('LOT-2026-001');
@@ -20,6 +28,9 @@ export default function Weighbridge() {
   const [printSlipLot, setPrintSlipLot] = useState(null);
 
   const selectedLot = lots.find(l => l.id === selectedLotId) || lots[0];
+
+  const pendingLots = lots.filter(l => !l.tareWeightKg || l.status === 'ARRIVED' || l.status === 'WEIGHMENT' || l.status === 'WEIGHING_GROSS');
+  const historyLots = lots.filter(l => (l.tareWeightKg && l.tareWeightKg > 0) || l.status === 'ACCEPTED' || l.status === 'COMPLETED');
 
   // Dynamic calculation
   const netWeight = Math.max(0, grossWeight - tareWeight);
@@ -50,6 +61,13 @@ export default function Weighbridge() {
     });
   };
 
+  const handleLoadLotOntoScale = (lot) => {
+    setSelectedLotId(lot.id);
+    setGrossWeight(lot.grossWeightKg || 4850);
+    setTareWeight(lot.tareWeightKg || 1620);
+    navigate('/procurement/weighbridge');
+  };
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -69,8 +87,176 @@ export default function Weighbridge() {
         </div>
       </div>
 
+      {/* Sub-tab Navigation */}
+      <div className="flex border-b border-slate-200">
+        <div className="flex gap-2">
+          <Link
+            to="/procurement/weighbridge"
+            className={`flex items-center gap-2 px-4 py-2 text-xs font-bold border-b-2 transition-all ${
+              activeTab === 'scale'
+                ? 'border-emerald-600 text-emerald-700 bg-emerald-50/50'
+                : 'border-transparent text-slate-500 hover:text-slate-800'
+            }`}
+          >
+            <Scale className="size-3.5" />
+            <span>Weighbridge Console</span>
+          </Link>
+          <Link
+            to="/procurement/weighbridge/pending"
+            className={`flex items-center gap-2 px-4 py-2 text-xs font-bold border-b-2 transition-all ${
+              activeTab === 'pending'
+                ? 'border-emerald-600 text-emerald-700 bg-emerald-50/50'
+                : 'border-transparent text-slate-500 hover:text-slate-800'
+            }`}
+          >
+            <Clock className="size-3.5" />
+            <span>Pending Weighments ({pendingLots.length})</span>
+          </Link>
+          <Link
+            to="/procurement/weighbridge/history"
+            className={`flex items-center gap-2 px-4 py-2 text-xs font-bold border-b-2 transition-all ${
+              activeTab === 'history'
+                ? 'border-emerald-600 text-emerald-700 bg-emerald-50/50'
+                : 'border-transparent text-slate-500 hover:text-slate-800'
+            }`}
+          >
+            <CheckCircle2 className="size-3.5" />
+            <span>Weighment History ({historyLots.length})</span>
+          </Link>
+        </div>
+      </div>
+
+      {/* Pending Weighments Queue Tab View */}
+      {activeTab === 'pending' && (
+        <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-xs space-y-4">
+          <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+            <div>
+              <h3 className="text-base font-bold text-slate-900">Pending Weighment Queue</h3>
+              <p className="text-xs text-slate-500">Vehicles in yard awaiting Gross or Tare weight certification</p>
+            </div>
+            <span className="text-xs font-mono font-bold px-2.5 py-1 rounded bg-amber-100 text-amber-800">
+              {pendingLots.length} Vehicles in Queue
+            </span>
+          </div>
+
+          <div className="overflow-x-auto">
+            <table className="w-full text-left text-xs text-slate-700">
+              <thead className="bg-slate-50 text-[11px] uppercase font-semibold text-slate-500 border-b border-slate-200">
+                <tr>
+                  <th className="px-4 py-3">Token #</th>
+                  <th className="px-4 py-3">Lot ID</th>
+                  <th className="px-4 py-3">Farmer</th>
+                  <th className="px-4 py-3">Vehicle</th>
+                  <th className="px-4 py-3">Commodity</th>
+                  <th className="px-4 py-3 text-right">Gross (kg)</th>
+                  <th className="px-4 py-3">Status</th>
+                  <th className="px-4 py-3 text-right">Action</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100">
+                {pendingLots.length === 0 ? (
+                  <tr>
+                    <td colSpan={8} className="py-8 text-center text-slate-400">
+                      No vehicles currently pending weighment in queue.
+                    </td>
+                  </tr>
+                ) : (
+                  pendingLots.map(lot => (
+                    <tr key={lot.id} className="hover:bg-slate-50/80 transition-colors">
+                      <td className="px-4 py-3 font-mono font-bold text-emerald-700">{lot.tokenNumber}</td>
+                      <td className="px-4 py-3 font-mono text-slate-900">{lot.lotNumber}</td>
+                      <td className="px-4 py-3 font-medium text-slate-900">{lot.farmerName}</td>
+                      <td className="px-4 py-3 font-mono">{lot.vehicleNumber}</td>
+                      <td className="px-4 py-3">{lot.commodity}</td>
+                      <td className="px-4 py-3 text-right font-mono font-bold">
+                        {lot.grossWeightKg ? `${lot.grossWeightKg.toLocaleString()} kg` : 'Pending Gross'}
+                      </td>
+                      <td className="px-4 py-3">
+                        <StatusBadge status={lot.status} size="xs" />
+                      </td>
+                      <td className="px-4 py-3 text-right">
+                        <button
+                          onClick={() => handleLoadLotOntoScale(lot)}
+                          className="inline-flex items-center gap-1 rounded-lg bg-emerald-600 px-3 py-1 text-tiny font-bold text-white hover:bg-emerald-700 shadow-xs"
+                        >
+                          <span>Weigh on Scale</span>
+                          <ArrowRight className="size-3" />
+                        </button>
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+
+      {/* Weighment History Tab View */}
+      {activeTab === 'history' && (
+        <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-xs space-y-4">
+          <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+            <div>
+              <h3 className="text-base font-bold text-slate-900">Certified Weighment History</h3>
+              <p className="text-xs text-slate-500">Official log of Avery certified gross, tare, and net weights</p>
+            </div>
+            <span className="text-xs font-mono font-bold px-2.5 py-1 rounded bg-emerald-100 text-emerald-800">
+              {historyLots.length} Weighments Completed
+            </span>
+          </div>
+
+          <div className="overflow-x-auto">
+            <table className="w-full text-left text-xs text-slate-700">
+              <thead className="bg-slate-50 text-[11px] uppercase font-semibold text-slate-500 border-b border-slate-200">
+                <tr>
+                  <th className="px-4 py-3">Slip #</th>
+                  <th className="px-4 py-3">Lot ID</th>
+                  <th className="px-4 py-3">Farmer</th>
+                  <th className="px-4 py-3">Vehicle</th>
+                  <th className="px-4 py-3">Commodity</th>
+                  <th className="px-4 py-3 text-right">Gross</th>
+                  <th className="px-4 py-3 text-right">Tare</th>
+                  <th className="px-4 py-3 text-right">Net Weight</th>
+                  <th className="px-4 py-3 text-right">Net Qtl</th>
+                  <th className="px-4 py-3 text-right">Print</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100">
+                {historyLots.slice(0, 15).map(lot => (
+                  <tr key={lot.id} className="hover:bg-slate-50/80 transition-colors">
+                    <td className="px-4 py-3 font-mono font-bold text-slate-900">{lot.weighment?.weighbridgeSlipNo || 'WB-PN-4412'}</td>
+                    <td className="px-4 py-3 font-mono text-emerald-700">{lot.lotNumber}</td>
+                    <td className="px-4 py-3 font-medium text-slate-900">{lot.farmerName}</td>
+                    <td className="px-4 py-3 font-mono">{lot.vehicleNumber}</td>
+                    <td className="px-4 py-3">{lot.commodity}</td>
+                    <td className="px-4 py-3 text-right font-mono">{lot.grossWeightKg?.toLocaleString()} kg</td>
+                    <td className="px-4 py-3 text-right font-mono">{lot.tareWeightKg?.toLocaleString()} kg</td>
+                    <td className="px-4 py-3 text-right font-mono font-black text-emerald-700">
+                      {lot.netWeightKg?.toLocaleString()} kg
+                    </td>
+                    <td className="px-4 py-3 text-right font-mono font-bold text-slate-900">
+                      {lot.quantityQuintals} Qtl
+                    </td>
+                    <td className="px-4 py-3 text-right">
+                      <button
+                        onClick={() => setPrintSlipLot(lot)}
+                        className="inline-flex items-center gap-1 rounded-lg border border-slate-200 bg-white px-2.5 py-1 text-tiny font-semibold text-slate-700 hover:bg-slate-50 shadow-2xs"
+                      >
+                        <Printer className="size-3 text-slate-500" />
+                        <span>Slip</span>
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+
       {/* Main Weighment Console Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      {activeTab === 'scale' && (
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Form and Electronic Weight Visualizer */}
         <div className="lg:col-span-2 space-y-6">
           {/* Digital Scale LED Visual Display */}
@@ -246,6 +432,7 @@ export default function Weighbridge() {
           </div>
         </div>
       </div>
+      )}
 
       {/* Printable Weighment Slip Modal */}
       {printSlipLot && (

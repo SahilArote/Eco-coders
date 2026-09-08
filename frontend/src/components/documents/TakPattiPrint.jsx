@@ -178,7 +178,7 @@ export default function TakPattiPrint({ lot }) {
 
         {/* Footer Barcode Placeholder */}
         <div className="mt-6 text-center border-t border-slate-200 pt-3 flex items-center justify-between text-tiny text-slate-400">
-          <span>KRISHI-SETU DIGITAL VERIFICATION SEAL • MH-AGRI-SEC-2026</span>
+          <span>Kraya Sutra DIGITAL VERIFICATION SEAL • MH-AGRI-SEC-2026</span>
           <span className="font-mono font-bold tracking-widest text-slate-700">||||| | |||| |||||| | ||||| ||||</span>
           <span>System Generated • No Physical Alteration Valid</span>
         </div>

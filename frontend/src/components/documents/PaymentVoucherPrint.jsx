@@ -57,7 +57,7 @@ export function GatePassPrint({ lot, token }) {
 
         <div className="mt-4 text-center">
           <div className="font-mono text-xs tracking-widest text-slate-800 py-1 border border-slate-300 bg-slate-50 rounded">
-            *||||| KRISHI-SETU-GATE-PASS-AUTH |||||*
+            *||||| KRAYA-SUTRA-GATE-PASS-AUTH |||||*
           </div>
           <p className="text-tiny text-slate-500 mt-2">
             Valid only on date of issue. Driver must retain this slip until final Gate-Out Weighment.
@@ -119,7 +119,7 @@ export function PaymentVoucherPrint({ payment, lot }) {
 
         <div className="mt-4 text-xs text-slate-500 flex justify-between items-center">
           <span>Certified by APMC Finance Officer</span>
-          <span className="font-mono text-tiny">Simulated Production Voucher • Krishi-Setu DBT Engine</span>
+          <span className="font-mono text-tiny">Simulated Production Voucher • Kraya Sutra DBT Engine</span>
         </div>
       </div>
     </div>

@@ -1,17 +1,24 @@
 import { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import {
   FlaskConical,
   AlertTriangle,
   Award,
   Layers,
-  Eye
+  Eye,
+  Clock,
+  CheckCircle2,
+  ArrowRight
 } from 'lucide-react';
 import { useProcurement } from '../../context/ProcurementContext';
 import StatusBadge from '../../components/common/StatusBadge';
 import DetailDrawer from '../../components/common/DetailDrawer';
 
-export default function QualityAssay() {
+export default function QualityAssay({ defaultTab = 'testing' }) {
   const { lots, recordQuality } = useProcurement();
+  const navigate = useNavigate();
+
+  const activeTab = defaultTab;
 
   const [selectedLotId, setSelectedLotId] = useState('LOT-2026-001');
   const [moisture, setMoisture] = useState(11.2);
@@ -25,6 +32,8 @@ export default function QualityAssay() {
 
   const selectedLot = lots.find(l => l.id === selectedLotId) || lots[0];
 
+  const pendingAssayLots = lots.filter(l => !l.assay || l.assay?.status === 'QUALITY CHECK' || l.status === 'ARRIVED');
+
   const handleSaveAssay = (e) => {
     e.preventDefault();
     recordQuality(selectedLot.id, {
@@ -35,6 +44,18 @@ export default function QualityAssay() {
       remarks,
       assayerName
     });
+  };
+
+  const handleLoadLotForTesting = (lot) => {
+    setSelectedLotId(lot.id);
+    if (lot.assay) {
+      setMoisture(lot.assay.moisturePercent || 11.2);
+      setForeignMatter(lot.assay.foreignMatterPercent || 0.8);
+      setGrade(lot.assay.grade || 'A');
+      setStatus(lot.assay.status || 'PASSED');
+      setRemarks(lot.assay.remarks || 'FAQ standard passed.');
+    }
+    navigate('/procurement/quality');
   };
 
   // Grade Counts
@@ -53,8 +74,111 @@ export default function QualityAssay() {
         </p>
       </div>
 
-      {/* Grade Distribution Summary Cards */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+      {/* Sub-tab Navigation */}
+      <div className="flex border-b border-slate-200">
+        <div className="flex gap-2">
+          <Link
+            to="/procurement/quality"
+            className={`flex items-center gap-2 px-4 py-2 text-xs font-bold border-b-2 transition-all ${
+              activeTab === 'testing'
+                ? 'border-emerald-600 text-emerald-700 bg-emerald-50/50'
+                : 'border-transparent text-slate-500 hover:text-slate-800'
+            }`}
+          >
+            <FlaskConical className="size-3.5" />
+            <span>Quality Testing</span>
+          </Link>
+          <Link
+            to="/procurement/quality/pending"
+            className={`flex items-center gap-2 px-4 py-2 text-xs font-bold border-b-2 transition-all ${
+              activeTab === 'pending'
+                ? 'border-emerald-600 text-emerald-700 bg-emerald-50/50'
+                : 'border-transparent text-slate-500 hover:text-slate-800'
+            }`}
+          >
+            <Clock className="size-3.5" />
+            <span>Pending Assays ({pendingAssayLots.length})</span>
+          </Link>
+          <Link
+            to="/procurement/quality/history"
+            className={`flex items-center gap-2 px-4 py-2 text-xs font-bold border-b-2 transition-all ${
+              activeTab === 'history'
+                ? 'border-emerald-600 text-emerald-700 bg-emerald-50/50'
+                : 'border-transparent text-slate-500 hover:text-slate-800'
+            }`}
+          >
+            <CheckCircle2 className="size-3.5" />
+            <span>Assay History</span>
+          </Link>
+        </div>
+      </div>
+
+      {/* Pending Assays Queue View */}
+      {activeTab === 'pending' && (
+        <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-xs space-y-4">
+          <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+            <div>
+              <h3 className="text-base font-bold text-slate-900">Pending Quality Assays Queue</h3>
+              <p className="text-xs text-slate-500">Produce lots staged in mandi yard awaiting laboratory sampling &amp; moisture grading</p>
+            </div>
+            <span className="text-xs font-mono font-bold px-2.5 py-1 rounded bg-amber-100 text-amber-800">
+              {pendingAssayLots.length} Lots Awaiting Assay
+            </span>
+          </div>
+
+          <div className="overflow-x-auto">
+            <table className="w-full text-left text-xs text-slate-700">
+              <thead className="bg-slate-50 text-[11px] uppercase font-semibold text-slate-500 border-b border-slate-200">
+                <tr>
+                  <th className="px-4 py-3">Token #</th>
+                  <th className="px-4 py-3">Lot ID</th>
+                  <th className="px-4 py-3">Farmer</th>
+                  <th className="px-4 py-3">Vehicle</th>
+                  <th className="px-4 py-3">Commodity</th>
+                  <th className="px-4 py-3">Status</th>
+                  <th className="px-4 py-3 text-right">Action</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100">
+                {pendingAssayLots.length === 0 ? (
+                  <tr>
+                    <td colSpan={7} className="py-8 text-center text-slate-400">
+                      No lots currently awaiting quality assay.
+                    </td>
+                  </tr>
+                ) : (
+                  pendingAssayLots.map(lot => (
+                    <tr key={lot.id} className="hover:bg-slate-50/80 transition-colors">
+                      <td className="px-4 py-3 font-mono font-bold text-emerald-700">{lot.tokenNumber}</td>
+                      <td className="px-4 py-3 font-mono text-slate-900">{lot.lotNumber}</td>
+                      <td className="px-4 py-3 font-medium text-slate-900">{lot.farmerName}</td>
+                      <td className="px-4 py-3 font-mono">{lot.vehicleNumber}</td>
+                      <td className="px-4 py-3">{lot.commodity}</td>
+                      <td className="px-4 py-3">
+                        <StatusBadge status={lot.status || 'QUALITY CHECK'} size="xs" />
+                      </td>
+                      <td className="px-4 py-3 text-right">
+                        <button
+                          onClick={() => handleLoadLotForTesting(lot)}
+                          className="inline-flex items-center gap-1 rounded-lg bg-emerald-600 px-3 py-1 text-tiny font-bold text-white hover:bg-emerald-700 shadow-xs"
+                        >
+                          <span>Test Sample</span>
+                          <ArrowRight className="size-3" />
+                        </button>
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+
+      {/* Grade Distribution Summary Cards (active during testing) */}
+      {activeTab === 'testing' && (
+        <>
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
         <div className="rounded-2xl border border-emerald-200 bg-emerald-50/60 p-4">
           <div className="flex items-center justify-between">
             <span className="text-tiny font-bold uppercase tracking-wider text-emerald-800">Grade A (Premium)</span>
@@ -273,58 +397,62 @@ export default function QualityAssay() {
           </div>
         </div>
       </div>
+        </>
+      )}
 
       {/* Assay Test Registry Table */}
-      <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-xs">
-        <div className="border-b border-slate-100 pb-3 flex items-center justify-between">
-          <h3 className="text-base font-bold text-slate-900">Laboratory Assay Test Records</h3>
-          <span className="text-xs text-slate-500">Government FAQ Certified Testing Log</span>
-        </div>
+      {activeTab === 'history' && (
+        <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-xs">
+          <div className="border-b border-slate-100 pb-3 flex items-center justify-between">
+            <h3 className="text-base font-bold text-slate-900">Laboratory Assay Test Records</h3>
+            <span className="text-xs text-slate-500">Government FAQ Certified Testing Log</span>
+          </div>
 
-        <div className="overflow-x-auto mt-4">
-          <table className="w-full text-left text-sm text-slate-700">
-            <thead className="bg-slate-50 text-xs uppercase font-semibold text-slate-500 border-b border-slate-200">
-              <tr>
-                <th className="px-4 py-3">Lot ID</th>
-                <th className="px-4 py-3">Farmer</th>
-                <th className="px-4 py-3">Commodity</th>
-                <th className="px-4 py-3 text-center">Moisture %</th>
-                <th className="px-4 py-3 text-center">Foreign Matter %</th>
-                <th className="px-4 py-3 text-center">Grade</th>
-                <th className="px-4 py-3">Assayer</th>
-                <th className="px-4 py-3">Verdict</th>
-                <th className="px-4 py-3 text-right">View</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-100 text-xs">
-              {lots.slice(0, 10).map(l => (
-                <tr key={l.id} className="hover:bg-slate-50">
-                  <td className="px-4 py-3 font-mono font-bold text-slate-900">{l.lotNumber}</td>
-                  <td className="px-4 py-3 font-medium">{l.farmerName}</td>
-                  <td className="px-4 py-3">{l.commodity}</td>
-                  <td className="px-4 py-3 text-center font-mono font-semibold">{l.assay?.moisturePercent}%</td>
-                  <td className="px-4 py-3 text-center font-mono">{l.assay?.foreignMatterPercent}%</td>
-                  <td className="px-4 py-3 text-center font-bold text-emerald-800">
-                    Grade {l.assay?.grade || 'A'}
-                  </td>
-                  <td className="px-4 py-3 text-slate-500 truncate max-w-[150px]">{l.assay?.assayerName}</td>
-                  <td className="px-4 py-3">
-                    <StatusBadge status={l.assay?.status || 'PASSED'} size="xs" />
-                  </td>
-                  <td className="px-4 py-3 text-right">
-                    <button
-                      onClick={() => setInspectLot(l)}
-                      className="rounded-lg p-1 text-slate-500 hover:bg-slate-100"
-                    >
-                      <Eye className="size-4" />
-                    </button>
-                  </td>
+          <div className="overflow-x-auto mt-4">
+            <table className="w-full text-left text-sm text-slate-700">
+              <thead className="bg-slate-50 text-xs uppercase font-semibold text-slate-500 border-b border-slate-200">
+                <tr>
+                  <th className="px-4 py-3">Lot ID</th>
+                  <th className="px-4 py-3">Farmer</th>
+                  <th className="px-4 py-3">Commodity</th>
+                  <th className="px-4 py-3 text-center">Moisture %</th>
+                  <th className="px-4 py-3 text-center">Foreign Matter %</th>
+                  <th className="px-4 py-3 text-center">Grade</th>
+                  <th className="px-4 py-3">Assayer</th>
+                  <th className="px-4 py-3">Verdict</th>
+                  <th className="px-4 py-3 text-right">View</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody className="divide-y divide-slate-100 text-xs">
+                {lots.slice(0, 15).map(l => (
+                  <tr key={l.id} className="hover:bg-slate-50">
+                    <td className="px-4 py-3 font-mono font-bold text-slate-900">{l.lotNumber}</td>
+                    <td className="px-4 py-3 font-medium">{l.farmerName}</td>
+                    <td className="px-4 py-3">{l.commodity}</td>
+                    <td className="px-4 py-3 text-center font-mono font-semibold">{l.assay?.moisturePercent}%</td>
+                    <td className="px-4 py-3 text-center font-mono">{l.assay?.foreignMatterPercent}%</td>
+                    <td className="px-4 py-3 text-center font-bold text-emerald-800">
+                      Grade {l.assay?.grade || 'A'}
+                    </td>
+                    <td className="px-4 py-3 text-slate-500 truncate max-w-[150px]">{l.assay?.assayerName}</td>
+                    <td className="px-4 py-3">
+                      <StatusBadge status={l.assay?.status || 'PASSED'} size="xs" />
+                    </td>
+                    <td className="px-4 py-3 text-right">
+                      <button
+                        onClick={() => setInspectLot(l)}
+                        className="rounded-lg p-1 text-slate-500 hover:bg-slate-100"
+                      >
+                        <Eye className="size-4" />
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
-      </div>
+      )}
 
       {/* Detail Drawer */}
       <DetailDrawer

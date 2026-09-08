@@ -1,6 +1,6 @@
 # Comprehensive Implementation Plan: APMC Mandi Procurement Management Platform
 
-**Platform Title**: Krishi-Setu APMC — Intelligent Agricultural Procurement & Queue Management System  
+**Platform Title**: Kraya Sutra APMC — Intelligent Agricultural Procurement & Queue Management System  
 **System Type**: Enterprise Staff, Operator & Mandi Administration Platform (Internal APMC ERP)  
 **Standard**: SIH Problem Statement 26032 • DoCA / Ministry of Consumer Affairs, Food & Public Distribution  
 **Document**: Architecture, Phased Roadmap & Specification (`docs/implementation.md`)  
@@ -161,7 +161,7 @@ Each operational role has a dedicated dashboard surface displaying role-specific
 ## 6. Login Flow & Experience (7 Staff Roles)
 
 A dedicated, enterprise-grade Login Screen at `/login`:
-- **Branding**: Official Government of Maharashtra APMC & DoCA emblem with "Krishi-Setu APMC Staff & Operator Portal" identity.
+- **Branding**: Official Government of Maharashtra APMC & DoCA emblem with "Kraya Sutra APMC Staff & Operator Portal" identity.
 - **Interactive "Login As" Role Matrix**: **7 selectable operational roles**:
   - `[ Gate / Entry Operator ]`
   - `[ Weighbridge Operator ]`
@@ -170,7 +170,7 @@ A dedicated, enterprise-grade Login Screen at `/login`:
   - `[ Procurement Officer ]`
   - `[ Payment / Accounts Officer ]`
   - `[ Mandi Supervisor / Admin ]`
-- **Demo Quick-Fill Credentials**: Pre-configured demo staff accounts (e.g. `gate.operator@apmc.gov.in`, `weighbridge@apmc.gov.in`, `admin@krishisetu.gov.in`).
+- **Demo Quick-Fill Credentials**: Pre-configured demo staff accounts (e.g. `gate.operator@apmc.gov.in`, `weighbridge@apmc.gov.in`, `admin@krayasutra.gov.in`).
 - **Remember Me & Language Selector**: English, Hindi, and Marathi toggle.
 - **Instant Redirection**: On clicking "Sign In to APMC Console", the selected role is stored in `localStorage` and the user is routed directly to their corresponding role dashboard.
 
@@ -236,7 +236,7 @@ A dedicated, enterprise-grade Login Screen at `/login`:
 
 The platform uses a unified, responsive **Sideblock Shell**:
 - **Sidebar (`Sidebar.jsx`)**:
-  - Top: Krishi-Setu APMC Staff Portal logo and authority badge.
+  - Top: Kraya Sutra APMC Staff Portal logo and authority badge.
   - Navigation Sections:
     - **Dashboard**: Role-targeted main dashboard.
     - **Procurement Operations**: Gate Entry, Tokens, Queue Management, Weighbridge, Quality Assay, Procurement Lots, Auctions.

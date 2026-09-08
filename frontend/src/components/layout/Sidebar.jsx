@@ -1,4 +1,4 @@
-import { NavLink, Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import {
   LayoutDashboard,
   Truck,
@@ -20,16 +20,11 @@ import {
   Building2
 } from 'lucide-react';
 import { useProcurement } from '../../context/ProcurementContext';
+import { getActiveNavItemPath } from './navUtils';
 
 export default function Sidebar({ isOpen, onClose }) {
   const { currentRole, activeRoleObj, currentCenter } = useProcurement();
-
-  const navLinkClass = ({ isActive }) =>
-    `flex items-center gap-3 px-3 py-2.5 text-xs font-semibold rounded-xl transition-all duration-150 ${
-      isActive
-        ? 'bg-emerald-600 text-white shadow-xs font-bold'
-        : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
-    }`;
+  const location = useLocation();
 
   const navItemClick = () => {
     if (window.innerWidth < 1024 && onClose) {
@@ -54,9 +49,9 @@ export default function Sidebar({ isOpen, onClose }) {
           sectionTitle: 'Weighbridge Desk',
           items: [
             { label: 'Dashboard', path: '/dashboard/weighbridge', icon: LayoutDashboard },
-            { label: 'Pending Weighments', path: '/procurement/weighbridge', icon: Clock },
+            { label: 'Pending Weighments', path: '/procurement/weighbridge/pending', icon: Clock },
             { label: 'Weighbridge', path: '/procurement/weighbridge', icon: Scale },
-            { label: 'Weighment History', path: '/procurement/weighbridge', icon: CheckCircle2 },
+            { label: 'Weighment History', path: '/procurement/weighbridge/history', icon: CheckCircle2 },
             { label: 'Weight Slips', path: '/documents/weighment-slips', icon: Receipt }
           ]
         };
@@ -66,9 +61,9 @@ export default function Sidebar({ isOpen, onClose }) {
           sectionTitle: 'Quality & Assay Lab',
           items: [
             { label: 'Dashboard', path: '/dashboard/quality', icon: LayoutDashboard },
-            { label: 'Pending Assays', path: '/procurement/quality', icon: Clock },
+            { label: 'Pending Assays', path: '/procurement/quality/pending', icon: Clock },
             { label: 'Quality Testing', path: '/procurement/quality', icon: FlaskConical },
-            { label: 'Assay History', path: '/procurement/quality', icon: CheckCircle2 },
+            { label: 'Assay History', path: '/procurement/quality/history', icon: CheckCircle2 },
             { label: 'Quality Reports', path: '/reports', icon: BarChart3 }
           ]
         };
@@ -80,8 +75,8 @@ export default function Sidebar({ isOpen, onClose }) {
             { label: 'Dashboard', path: '/dashboard/auction', icon: LayoutDashboard },
             { label: 'Auction Lots', path: '/procurement/lots', icon: Package },
             { label: 'Live Auctions', path: '/procurement/auctions', icon: Gavel },
-            { label: 'Bid History', path: '/procurement/auctions', icon: Clock },
-            { label: 'Completed Auctions', path: '/procurement/auctions', icon: CheckCircle2 }
+            { label: 'Bid History', path: '/procurement/auctions/history', icon: Clock },
+            { label: 'Completed Auctions', path: '/procurement/auctions/completed', icon: CheckCircle2 }
           ]
         };
 
@@ -91,7 +86,7 @@ export default function Sidebar({ isOpen, onClose }) {
           items: [
             { label: 'Dashboard', path: '/dashboard/procurement', icon: LayoutDashboard },
             { label: 'Procurement Lots', path: '/procurement/lots', icon: Package },
-            { label: 'Approved Lots', path: '/procurement/lots', icon: CheckCircle2 },
+            { label: 'Approved Lots', path: '/procurement/lots/approved', icon: CheckCircle2 },
             { label: 'Settlement', path: '/payments/pending', icon: CreditCard },
             { label: 'Procurement History', path: '/procurement/overview', icon: FileText }
           ]
@@ -127,6 +122,7 @@ export default function Sidebar({ isOpen, onClose }) {
   };
 
   const navConfig = getRoleNavItems();
+  const activeItemPath = getActiveNavItemPath(navConfig.items, location.pathname);
 
   return (
     <>
@@ -151,7 +147,7 @@ export default function Sidebar({ isOpen, onClose }) {
             </div>
             <div>
               <span className="text-sm font-extrabold tracking-tight text-slate-900 flex items-center gap-1">
-                KRISHI-SETU
+                Kraya Sutra
                 <span className="rounded bg-amber-100 text-amber-800 text-[10px] px-1 font-bold">APMC</span>
               </span>
               <p className="text-[10px] font-medium text-slate-500 uppercase tracking-widest">
@@ -184,17 +180,21 @@ export default function Sidebar({ isOpen, onClose }) {
 
           {navConfig.items.map((item, idx) => {
             const Icon = item.icon;
+            const isActive = item.path === activeItemPath;
             return (
-              <NavLink
+              <Link
                 key={`${item.path}-${idx}`}
                 to={item.path}
-                end={item.path.includes('/dashboard')}
                 onClick={navItemClick}
-                className={navLinkClass}
+                className={`flex items-center gap-3 px-3 py-2.5 text-xs font-semibold rounded-xl transition-all duration-150 ${
+                  isActive
+                    ? 'bg-emerald-600 text-white shadow-xs font-bold'
+                    : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
+                }`}
               >
                 <Icon className="size-4 shrink-0" />
                 <span>{item.label}</span>
-              </NavLink>
+              </Link>
             );
           })}
         </div>

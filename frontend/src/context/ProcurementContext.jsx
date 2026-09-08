@@ -184,7 +184,7 @@ export function ProcurementProvider({ children }) {
       vehicleNumber: bookingData.vehicleNumber || 'MH-12-TR-9999',
       gateNumber: 'Gate 2 (North)',
       checkInTime: null,
-      qrCodeData: 'KRISHI-SETU-' + nextNum + '-' + center.id
+      qrCodeData: 'KRAYA-SUTRA-' + nextNum + '-' + center.id
     };
 
     setTokens(prev => [newToken, ...prev]);

@@ -77,10 +77,17 @@ export default function App() {
         <Route path="procurement/tokens" element={<DigitalTokens />} />
         <Route path="procurement/queue" element={<QueueManagement />} />
         <Route path="procurement/gate-entry" element={<GateEntry />} />
-        <Route path="procurement/weighbridge" element={<Weighbridge />} />
-        <Route path="procurement/quality" element={<QualityAssay />} />
-        <Route path="procurement/lots" element={<ProcurementLots />} />
-        <Route path="procurement/auctions" element={<AuctionFloor />} />
+        <Route path="procurement/weighbridge" element={<Weighbridge defaultTab="scale" />} />
+        <Route path="procurement/weighbridge/pending" element={<Weighbridge defaultTab="pending" />} />
+        <Route path="procurement/weighbridge/history" element={<Weighbridge defaultTab="history" />} />
+        <Route path="procurement/quality" element={<QualityAssay defaultTab="testing" />} />
+        <Route path="procurement/quality/pending" element={<QualityAssay defaultTab="pending" />} />
+        <Route path="procurement/quality/history" element={<QualityAssay defaultTab="history" />} />
+        <Route path="procurement/lots" element={<ProcurementLots defaultTab="all" />} />
+        <Route path="procurement/lots/approved" element={<ProcurementLots defaultTab="approved" />} />
+        <Route path="procurement/auctions" element={<AuctionFloor defaultTab="live" />} />
+        <Route path="procurement/auctions/history" element={<AuctionFloor defaultTab="history" />} />
+        <Route path="procurement/auctions/completed" element={<AuctionFloor defaultTab="completed" />} />
 
         {/* Administrative Farmer Records */}
         <Route path="farmers" element={<FarmerDirectory />} />

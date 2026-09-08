@@ -260,7 +260,7 @@ export default function GateEntry() {
           </div>
 
           <p className="text-xs text-slate-600 leading-relaxed">
-            All agricultural commercial vehicles entering the yard must possess a valid <strong>Krishi-Setu digital token</strong> or undergo on-spot gate registration.
+            All agricultural commercial vehicles entering the yard must possess a valid <strong>Kraya Sutra digital token</strong> or undergo on-spot gate registration.
           </p>
 
           <div className="rounded-xl border border-slate-200 bg-white p-4 space-y-2 text-xs text-slate-700">

@@ -21,7 +21,7 @@ export default function LoginPage() {
   const { setCurrentRole, showToast } = useProcurement();
 
   const [selectedRoleId, setSelectedRoleId] = useState('admin');
-  const [email, setEmail] = useState('admin@krishisetu.gov.in');
+  const [email, setEmail] = useState('admin@krayasutra.gov.in');
   const [password, setPassword] = useState('apmc@2026');
   const [rememberMe, setRememberMe] = useState(true);
 
@@ -73,7 +73,7 @@ export default function LoginPage() {
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <span className="font-extrabold tracking-tight text-white text-base">KRISHI-SETU</span>
+              <span className="font-extrabold tracking-tight text-white text-base">Kraya Sutra</span>
               <span className="text-[10px] uppercase font-bold bg-amber-500/20 text-amber-300 border border-amber-500/30 px-1.5 py-0.5 rounded">
                 APMC Staff Portal
               </span>

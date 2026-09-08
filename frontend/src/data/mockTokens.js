@@ -20,8 +20,8 @@ export const mockTokens = [
     "vehicleNumber": "MH-12-AQ-4481",
     "gateNumber": "Gate 2 (North Commercial)",
     "checkInTime": "09:45 AM",
-    "qrCodeData": "KRISHI-SETU-TOKEN-A105-F1001-PUNE-WHEAT",
-    "notes": "Pre-booked via Krishi-Setu portal"
+    "qrCodeData": "KRAYA-SUTRA-TOKEN-A105-F1001-PUNE-WHEAT",
+    "notes": "Pre-booked via Kraya Sutra portal"
   },
   {
     "tokenNumber": "A088",
@@ -43,7 +43,7 @@ export const mockTokens = [
     "vehicleNumber": "MH-12-BF-2311",
     "gateNumber": "Gate 1 (Main South)",
     "checkInTime": "08:50 AM",
-    "qrCodeData": "KRISHI-SETU-TOKEN-A088-F1002-PUNE-WHEAT"
+    "qrCodeData": "KRAYA-SUTRA-TOKEN-A088-F1002-PUNE-WHEAT"
   },
   {
     "tokenNumber": "A089",
@@ -65,7 +65,7 @@ export const mockTokens = [
     "vehicleNumber": "MH-12-CD-9012",
     "gateNumber": "Gate 2 (North Commercial)",
     "checkInTime": "09:10 AM",
-    "qrCodeData": "KRISHI-SETU-TOKEN-A089-F1003-PUNE-ONION"
+    "qrCodeData": "KRAYA-SUTRA-TOKEN-A089-F1003-PUNE-ONION"
   },
   {
     "tokenNumber": "A090",
@@ -87,7 +87,7 @@ export const mockTokens = [
     "vehicleNumber": "MH-12-EX-1188",
     "gateNumber": "Gate 1 (Main South)",
     "checkInTime": "09:15 AM",
-    "qrCodeData": "KRISHI-SETU-TOKEN-A090-F1004-PUNE-SOYBEAN"
+    "qrCodeData": "KRAYA-SUTRA-TOKEN-A090-F1004-PUNE-SOYBEAN"
   },
   {
     "tokenNumber": "A091",
@@ -109,7 +109,7 @@ export const mockTokens = [
     "vehicleNumber": "MH-12-FZ-4321",
     "gateNumber": "Gate 2 (North Commercial)",
     "checkInTime": "09:25 AM",
-    "qrCodeData": "KRISHI-SETU-TOKEN-A091-F1005-PUNE-CHANA"
+    "qrCodeData": "KRAYA-SUTRA-TOKEN-A091-F1005-PUNE-CHANA"
   },
   {
     "tokenNumber": "A092",
@@ -131,7 +131,7 @@ export const mockTokens = [
     "vehicleNumber": "MH-12-TR-1092",
     "gateNumber": "Gate 3",
     "checkInTime": "09:30 AM",
-    "qrCodeData": "KRISHI-SETU-TOKEN-A092"
+    "qrCodeData": "KRAYA-SUTRA-TOKEN-A092"
   },
   {
     "tokenNumber": "A093",
@@ -153,7 +153,7 @@ export const mockTokens = [
     "vehicleNumber": "MH-12-TR-1093",
     "gateNumber": "Gate 1",
     "checkInTime": "09:30 AM",
-    "qrCodeData": "KRISHI-SETU-TOKEN-A093"
+    "qrCodeData": "KRAYA-SUTRA-TOKEN-A093"
   },
   {
     "tokenNumber": "A094",
@@ -175,7 +175,7 @@ export const mockTokens = [
     "vehicleNumber": "MH-12-TR-1094",
     "gateNumber": "Gate 2",
     "checkInTime": "09:30 AM",
-    "qrCodeData": "KRISHI-SETU-TOKEN-A094"
+    "qrCodeData": "KRAYA-SUTRA-TOKEN-A094"
   },
   {
     "tokenNumber": "A095",
@@ -197,7 +197,7 @@ export const mockTokens = [
     "vehicleNumber": "MH-12-TR-1095",
     "gateNumber": "Gate 3",
     "checkInTime": "09:30 AM",
-    "qrCodeData": "KRISHI-SETU-TOKEN-A095"
+    "qrCodeData": "KRAYA-SUTRA-TOKEN-A095"
   },
   {
     "tokenNumber": "A096",
@@ -219,7 +219,7 @@ export const mockTokens = [
     "vehicleNumber": "MH-12-TR-1096",
     "gateNumber": "Gate 1",
     "checkInTime": "09:30 AM",
-    "qrCodeData": "KRISHI-SETU-TOKEN-A096"
+    "qrCodeData": "KRAYA-SUTRA-TOKEN-A096"
   },
   {
     "tokenNumber": "A097",
@@ -241,7 +241,7 @@ export const mockTokens = [
     "vehicleNumber": "MH-12-TR-1097",
     "gateNumber": "Gate 2",
     "checkInTime": "09:30 AM",
-    "qrCodeData": "KRISHI-SETU-TOKEN-A097"
+    "qrCodeData": "KRAYA-SUTRA-TOKEN-A097"
   },
   {
     "tokenNumber": "A098",
@@ -263,7 +263,7 @@ export const mockTokens = [
     "vehicleNumber": "MH-12-TR-1098",
     "gateNumber": "Gate 3",
     "checkInTime": "09:30 AM",
-    "qrCodeData": "KRISHI-SETU-TOKEN-A098"
+    "qrCodeData": "KRAYA-SUTRA-TOKEN-A098"
   },
   {
     "tokenNumber": "A099",
@@ -285,7 +285,7 @@ export const mockTokens = [
     "vehicleNumber": "MH-12-TR-1099",
     "gateNumber": "Gate 1",
     "checkInTime": "09:30 AM",
-    "qrCodeData": "KRISHI-SETU-TOKEN-A099"
+    "qrCodeData": "KRAYA-SUTRA-TOKEN-A099"
   },
   {
     "tokenNumber": "A100",
@@ -307,7 +307,7 @@ export const mockTokens = [
     "vehicleNumber": "MH-12-TR-1100",
     "gateNumber": "Gate 2",
     "checkInTime": "09:30 AM",
-    "qrCodeData": "KRISHI-SETU-TOKEN-A100"
+    "qrCodeData": "KRAYA-SUTRA-TOKEN-A100"
   },
   {
     "tokenNumber": "A101",
@@ -329,7 +329,7 @@ export const mockTokens = [
     "vehicleNumber": "MH-12-TR-1101",
     "gateNumber": "Gate 3",
     "checkInTime": "09:30 AM",
-    "qrCodeData": "KRISHI-SETU-TOKEN-A101"
+    "qrCodeData": "KRAYA-SUTRA-TOKEN-A101"
   },
   {
     "tokenNumber": "A102",
@@ -351,7 +351,7 @@ export const mockTokens = [
     "vehicleNumber": "MH-12-TR-1102",
     "gateNumber": "Gate 1",
     "checkInTime": "09:30 AM",
-    "qrCodeData": "KRISHI-SETU-TOKEN-A102"
+    "qrCodeData": "KRAYA-SUTRA-TOKEN-A102"
   },
   {
     "tokenNumber": "A103",
@@ -373,7 +373,7 @@ export const mockTokens = [
     "vehicleNumber": "MH-12-TR-1103",
     "gateNumber": "Gate 2",
     "checkInTime": "09:30 AM",
-    "qrCodeData": "KRISHI-SETU-TOKEN-A103"
+    "qrCodeData": "KRAYA-SUTRA-TOKEN-A103"
   },
   {
     "tokenNumber": "A104",
@@ -395,7 +395,7 @@ export const mockTokens = [
     "vehicleNumber": "MH-12-TR-1104",
     "gateNumber": "Gate 3",
     "checkInTime": "09:30 AM",
-    "qrCodeData": "KRISHI-SETU-TOKEN-A104"
+    "qrCodeData": "KRAYA-SUTRA-TOKEN-A104"
   },
   {
     "tokenNumber": "A106",
@@ -417,7 +417,7 @@ export const mockTokens = [
     "vehicleNumber": "MH-12-TR-1106",
     "gateNumber": "Gate 2",
     "checkInTime": null,
-    "qrCodeData": "KRISHI-SETU-TOKEN-A106"
+    "qrCodeData": "KRAYA-SUTRA-TOKEN-A106"
   },
   {
     "tokenNumber": "A107",
@@ -439,7 +439,7 @@ export const mockTokens = [
     "vehicleNumber": "MH-12-TR-1107",
     "gateNumber": "Gate 3",
     "checkInTime": null,
-    "qrCodeData": "KRISHI-SETU-TOKEN-A107"
+    "qrCodeData": "KRAYA-SUTRA-TOKEN-A107"
   },
   {
     "tokenNumber": "A108",
@@ -461,7 +461,7 @@ export const mockTokens = [
     "vehicleNumber": "MH-12-TR-1108",
     "gateNumber": "Gate 1",
     "checkInTime": null,
-    "qrCodeData": "KRISHI-SETU-TOKEN-A108"
+    "qrCodeData": "KRAYA-SUTRA-TOKEN-A108"
   },
   {
     "tokenNumber": "A109",
@@ -483,7 +483,7 @@ export const mockTokens = [
     "vehicleNumber": "MH-12-TR-1109",
     "gateNumber": "Gate 2",
     "checkInTime": null,
-    "qrCodeData": "KRISHI-SETU-TOKEN-A109"
+    "qrCodeData": "KRAYA-SUTRA-TOKEN-A109"
   },
   {
     "tokenNumber": "A110",
@@ -505,7 +505,7 @@ export const mockTokens = [
     "vehicleNumber": "MH-12-TR-1110",
     "gateNumber": "Gate 3",
     "checkInTime": null,
-    "qrCodeData": "KRISHI-SETU-TOKEN-A110"
+    "qrCodeData": "KRAYA-SUTRA-TOKEN-A110"
   },
   {
     "tokenNumber": "A111",
@@ -527,7 +527,7 @@ export const mockTokens = [
     "vehicleNumber": "MH-12-TR-1111",
     "gateNumber": "Gate 1",
     "checkInTime": null,
-    "qrCodeData": "KRISHI-SETU-TOKEN-A111"
+    "qrCodeData": "KRAYA-SUTRA-TOKEN-A111"
   },
   {
     "tokenNumber": "A112",
@@ -549,7 +549,7 @@ export const mockTokens = [
     "vehicleNumber": "MH-12-TR-1112",
     "gateNumber": "Gate 2",
     "checkInTime": null,
-    "qrCodeData": "KRISHI-SETU-TOKEN-A112"
+    "qrCodeData": "KRAYA-SUTRA-TOKEN-A112"
   },
   {
     "tokenNumber": "A113",
@@ -571,7 +571,7 @@ export const mockTokens = [
     "vehicleNumber": "MH-12-TR-1113",
     "gateNumber": "Gate 3",
     "checkInTime": null,
-    "qrCodeData": "KRISHI-SETU-TOKEN-A113"
+    "qrCodeData": "KRAYA-SUTRA-TOKEN-A113"
   },
   {
     "tokenNumber": "A114",
@@ -593,7 +593,7 @@ export const mockTokens = [
     "vehicleNumber": "MH-12-TR-1114",
     "gateNumber": "Gate 1",
     "checkInTime": null,
-    "qrCodeData": "KRISHI-SETU-TOKEN-A114"
+    "qrCodeData": "KRAYA-SUTRA-TOKEN-A114"
   },
   {
     "tokenNumber": "A115",
@@ -615,7 +615,7 @@ export const mockTokens = [
     "vehicleNumber": "MH-12-TR-1115",
     "gateNumber": "Gate 2",
     "checkInTime": null,
-    "qrCodeData": "KRISHI-SETU-TOKEN-A115"
+    "qrCodeData": "KRAYA-SUTRA-TOKEN-A115"
   },
   {
     "tokenNumber": "A116",
@@ -637,7 +637,7 @@ export const mockTokens = [
     "vehicleNumber": "MH-12-TR-1116",
     "gateNumber": "Gate 3",
     "checkInTime": null,
-    "qrCodeData": "KRISHI-SETU-TOKEN-A116"
+    "qrCodeData": "KRAYA-SUTRA-TOKEN-A116"
   },
   {
     "tokenNumber": "A117",
@@ -659,7 +659,7 @@ export const mockTokens = [
     "vehicleNumber": "MH-12-TR-1117",
     "gateNumber": "Gate 1",
     "checkInTime": null,
-    "qrCodeData": "KRISHI-SETU-TOKEN-A117"
+    "qrCodeData": "KRAYA-SUTRA-TOKEN-A117"
   },
   {
     "tokenNumber": "A118",
@@ -681,7 +681,7 @@ export const mockTokens = [
     "vehicleNumber": "MH-12-TR-1118",
     "gateNumber": "Gate 2",
     "checkInTime": null,
-    "qrCodeData": "KRISHI-SETU-TOKEN-A118"
+    "qrCodeData": "KRAYA-SUTRA-TOKEN-A118"
   },
   {
     "tokenNumber": "A119",
@@ -703,7 +703,7 @@ export const mockTokens = [
     "vehicleNumber": "MH-12-TR-1119",
     "gateNumber": "Gate 3",
     "checkInTime": null,
-    "qrCodeData": "KRISHI-SETU-TOKEN-A119"
+    "qrCodeData": "KRAYA-SUTRA-TOKEN-A119"
   },
   {
     "tokenNumber": "A120",
@@ -725,7 +725,7 @@ export const mockTokens = [
     "vehicleNumber": "MH-12-TR-1120",
     "gateNumber": "Gate 1",
     "checkInTime": null,
-    "qrCodeData": "KRISHI-SETU-TOKEN-A120"
+    "qrCodeData": "KRAYA-SUTRA-TOKEN-A120"
   },
   {
     "tokenNumber": "A121",
@@ -747,7 +747,7 @@ export const mockTokens = [
     "vehicleNumber": "MH-12-TR-1121",
     "gateNumber": "Gate 2",
     "checkInTime": null,
-    "qrCodeData": "KRISHI-SETU-TOKEN-A121"
+    "qrCodeData": "KRAYA-SUTRA-TOKEN-A121"
   },
   {
     "tokenNumber": "A122",
@@ -769,7 +769,7 @@ export const mockTokens = [
     "vehicleNumber": "MH-12-TR-1122",
     "gateNumber": "Gate 3",
     "checkInTime": null,
-    "qrCodeData": "KRISHI-SETU-TOKEN-A122"
+    "qrCodeData": "KRAYA-SUTRA-TOKEN-A122"
   },
   {
     "tokenNumber": "A123",
@@ -791,7 +791,7 @@ export const mockTokens = [
     "vehicleNumber": "MH-12-TR-1123",
     "gateNumber": "Gate 1",
     "checkInTime": null,
-    "qrCodeData": "KRISHI-SETU-TOKEN-A123"
+    "qrCodeData": "KRAYA-SUTRA-TOKEN-A123"
   },
   {
     "tokenNumber": "A124",
@@ -813,7 +813,7 @@ export const mockTokens = [
     "vehicleNumber": "MH-12-TR-1124",
     "gateNumber": "Gate 2",
     "checkInTime": null,
-    "qrCodeData": "KRISHI-SETU-TOKEN-A124"
+    "qrCodeData": "KRAYA-SUTRA-TOKEN-A124"
   },
   {
     "tokenNumber": "A125",
@@ -835,6 +835,6 @@ export const mockTokens = [
     "vehicleNumber": "MH-12-TR-1125",
     "gateNumber": "Gate 3",
     "checkInTime": null,
-    "qrCodeData": "KRISHI-SETU-TOKEN-A125"
+    "qrCodeData": "KRAYA-SUTRA-TOKEN-A125"
   }
 ];

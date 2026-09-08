@@ -1,8 +1,11 @@
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import {
   Printer,
   Eye,
-  CreditCard
+  CreditCard,
+  Package,
+  CheckCircle2
 } from 'lucide-react';
 import { useProcurement } from '../../context/ProcurementContext';
 import DataTable from '../../components/common/DataTable';
@@ -11,8 +14,12 @@ import DetailDrawer from '../../components/common/DetailDrawer';
 import Timeline from '../../components/common/Timeline';
 import TakPattiPrint from '../../components/documents/TakPattiPrint';
 
-export default function ProcurementLots() {
+export default function ProcurementLots({ defaultTab = 'all' }) {
   const { lots, crops, completeLot, processBulkPayment, payments, showToast } = useProcurement();
+
+  const activeTab = defaultTab;
+  const approvedLots = lots.filter(l => l.status === 'COMPLETED' || l.status === 'ACCEPTED');
+  const displayLots = activeTab === 'approved' ? approvedLots : lots;
 
   const [selectedLot, setSelectedLot] = useState(null);
   const [selectedRows, setSelectedRows] = useState([]);
@@ -173,7 +180,7 @@ export default function ProcurementLots() {
         <div className="flex items-center gap-2">
           <button
             onClick={() => {
-              const cleared = lots.filter(l => l.status === 'ACCEPTED').slice(0, 5).map(l => l.id);
+              const cleared = displayLots.filter(l => l.status === 'ACCEPTED').slice(0, 5).map(l => l.id);
               setSelectedRows(cleared);
             }}
             className="rounded-xl border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50 shadow-xs"
@@ -183,10 +190,38 @@ export default function ProcurementLots() {
         </div>
       </div>
 
+      {/* Sub-tab Navigation */}
+      <div className="flex border-b border-slate-200">
+        <div className="flex gap-2">
+          <Link
+            to="/procurement/lots"
+            className={`flex items-center gap-2 px-4 py-2 text-xs font-bold border-b-2 transition-all ${
+              activeTab === 'all'
+                ? 'border-emerald-600 text-emerald-700 bg-emerald-50/50'
+                : 'border-transparent text-slate-500 hover:text-slate-800'
+            }`}
+          >
+            <Package className="size-3.5" />
+            <span>All Procurement Lots ({lots.length})</span>
+          </Link>
+          <Link
+            to="/procurement/lots/approved"
+            className={`flex items-center gap-2 px-4 py-2 text-xs font-bold border-b-2 transition-all ${
+              activeTab === 'approved'
+                ? 'border-emerald-600 text-emerald-700 bg-emerald-50/50'
+                : 'border-transparent text-slate-500 hover:text-slate-800'
+            }`}
+          >
+            <CheckCircle2 className="size-3.5" />
+            <span>Approved Lots ({approvedLots.length})</span>
+          </Link>
+        </div>
+      </div>
+
       {/* Main DataTable */}
       <DataTable
         columns={columns}
-        data={lots}
+        data={displayLots}
         keyField="id"
         selectable={true}
         selectedRows={selectedRows}
