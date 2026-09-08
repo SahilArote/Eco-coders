@@ -1,41 +1,24 @@
-﻿import React, { useState } from 'react';
 import {
-  BarChart,
-  Bar,
+  AreaChart,
+  Area,
   XAxis,
   YAxis,
   CartesianGrid,
   Tooltip,
-  ResponsiveContainer,
-  PieChart,
-  Pie,
-  Cell,
-  LineChart,
-  Line,
-  AreaChart,
-  Area
+  ResponsiveContainer
 } from 'recharts';
 import {
-  BarChart3,
+  Download,
   TrendingUp,
   Building2,
-  Calendar,
-  Filter,
-  Download,
-  Award,
   Clock,
-  CheckCircle2,
-  Users
+  CheckCircle2
 } from 'lucide-react';
-import { useProcurement } from '../../context/ProcurementContext';
 import MetricCard from '../../components/common/MetricCard';
-
-const COLORS = ['#059669', '#10b981', '#f59e0b', '#3b82f6', '#8b5cf6', '#ec4899', '#64748b'];
+import { useProcurement } from '../../context/ProcurementContext';
 
 export default function ReportsAnalytics() {
-  const { centers, lots, crops, payments } = useProcurement();
-
-  const [activeTab, setActiveTab] = useState('overview');
+  const { centers, lots } = useProcurement();
 
   // Center Comparison Metrics (Section 27)
   const centerComparison = centers.map((c, i) => {

@@ -1,16 +1,7 @@
-﻿import React, { useState } from 'react';
 import {
-  Users2,
-  Clock,
-  ArrowRight,
-  RotateCcw,
   Volume2,
   Play,
-  SkipForward,
-  CheckCircle2,
-  AlertTriangle,
-  Building2,
-  Filter
+  SkipForward
 } from 'lucide-react';
 import { useProcurement } from '../../context/ProcurementContext';
 import StatusBadge from '../../components/common/StatusBadge';
@@ -26,7 +17,6 @@ export default function QueueManagement() {
   } = useProcurement();
 
   const waitingTokens = tokens.filter(t => ['ARRIVED', 'WAITING'].includes(t.status));
-  const activeTokens = tokens.filter(t => t.status === 'PROCESSING');
 
   return (
     <div className="space-y-6">

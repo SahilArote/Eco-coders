@@ -1,17 +1,31 @@
-﻿import React from 'react';
+const COLOR_MAP = {
+  emerald: 'bg-emerald-50 text-emerald-600 border-emerald-100',
+  sky: 'bg-sky-50 text-sky-600 border-sky-100',
+  amber: 'bg-amber-50 text-amber-600 border-amber-100',
+  purple: 'bg-purple-50 text-purple-600 border-purple-100',
+  indigo: 'bg-indigo-50 text-indigo-600 border-indigo-100',
+  teal: 'bg-teal-50 text-teal-600 border-teal-100',
+  rose: 'bg-rose-50 text-rose-600 border-rose-100',
+  slate: 'bg-slate-100 text-slate-700 border-slate-200'
+};
 
 export default function MetricCard({
   title,
   value,
   subtext,
+  sublabel,
   icon: Icon,
-  iconBg = 'bg-emerald-50 text-emerald-600 border-emerald-100',
+  color,
+  iconBg,
   trend,
   trendPositive = true,
   badgeText,
   onClick,
   className = ''
 }) {
+  const displaySubtext = subtext || sublabel;
+  const displayIconBg = (color && COLOR_MAP[color]) || iconBg || COLOR_MAP.emerald;
+
   return (
     <div
       onClick={onClick}
@@ -37,13 +51,13 @@ export default function MetricCard({
         </div>
 
         {Icon && (
-          <div className={`flex size-11 shrink-0 items-center justify-center rounded-xl border ${iconBg}`}>
+          <div className={`flex size-11 shrink-0 items-center justify-center rounded-xl border ${displayIconBg}`}>
             <Icon className="size-5" />
           </div>
         )}
       </div>
 
-      {(trend || subtext) && (
+      {(trend || displaySubtext) && (
         <div className="mt-3.5 flex items-center gap-2 pt-2 border-t border-slate-100 text-xs">
           {trend && (
             <span
@@ -54,9 +68,9 @@ export default function MetricCard({
               {trendPositive ? '↑' : '↓'} {trend}
             </span>
           )}
-          {subtext && (
+          {displaySubtext && (
             <span className="text-slate-500 truncate">
-              {subtext}
+              {displaySubtext}
             </span>
           )}
         </div>

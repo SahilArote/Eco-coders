@@ -172,8 +172,8 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({ onFinish }) => {
               },
             ]}
           >
-            <Text style={styles.appTitle}>KISAN e-PROCURE</Text>
-            <Text style={styles.hindiTitle}>किसान ई-प्रोक्योर</Text>
+            <Text style={styles.appTitle}>KRAYA SUTRA</Text>
+            <Text style={styles.hindiTitle}>क्रय सूत्र</Text>
           </Animated.View>
 
           {/* Tagline */}

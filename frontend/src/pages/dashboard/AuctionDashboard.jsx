@@ -1,22 +1,16 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { 
   Gavel, 
   TrendingUp, 
-  Clock, 
   CheckCircle2, 
-  Building2, 
-  Users, 
-  ShieldCheck, 
-  Plus, 
-  Sparkles,
-  ArrowUpRight
+  Clock,
+  Building2
 } from 'lucide-react';
 import { useProcurement } from '../../context/ProcurementContext';
 import MetricCard from '../../components/common/MetricCard';
-import StatusBadge from '../../components/common/StatusBadge';
 
 export default function AuctionDashboard() {
-  const { auctions, currentCenter, placeBid, closeAuction, showToast, currentRole, setCurrentRole } = useProcurement();
+  const { auctions, currentCenter, placeBid, closeAuction, currentRole, setCurrentRole } = useProcurement();
 
   // Keep active role synced when visiting /dashboard/auction
   useEffect(() => {

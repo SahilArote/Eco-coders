@@ -1,7 +1,6 @@
-﻿import React from 'react';
-import { Printer, Download, CheckCircle2 } from 'lucide-react';
+import { Printer } from 'lucide-react';
 
-export default function TakPattiPrint({ lot, onClose }) {
+export default function TakPattiPrint({ lot }) {
   if (!lot) return null;
 
   const handlePrint = () => {

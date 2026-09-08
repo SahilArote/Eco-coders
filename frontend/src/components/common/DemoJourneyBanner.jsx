@@ -1,14 +1,13 @@
-﻿import React, { useState } from 'react';
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Sparkles, ChevronRight, CheckCircle2, RotateCcw, ArrowRight } from 'lucide-react';
+import { Sparkles, ChevronRight, RotateCcw } from 'lucide-react';
 import { useProcurement } from '../../context/ProcurementContext';
 
 export default function DemoJourneyBanner() {
   const [collapsed, setCollapsed] = useState(false);
-  const { resetDemoData, tokens, lots, payments, currentRole, setCurrentRole } = useProcurement();
+  const { resetDemoData, tokens, payments } = useProcurement();
 
   const tokenA105 = tokens.find(t => t.tokenNumber === 'A105');
-  const lot001 = lots.find(l => l.id === 'LOT-2026-001');
   const pay001 = payments.find(p => p.id === 'PAY-2026-001');
 
   if (collapsed) {

@@ -1,14 +1,8 @@
-﻿import React, { useState } from 'react';
+import { useState } from 'react';
 import {
-  Package,
   Printer,
   Eye,
-  CreditCard,
-  Download,
-  Filter,
-  CheckCircle2,
-  AlertTriangle,
-  ChevronRight
+  CreditCard
 } from 'lucide-react';
 import { useProcurement } from '../../context/ProcurementContext';
 import DataTable from '../../components/common/DataTable';
@@ -18,7 +12,7 @@ import Timeline from '../../components/common/Timeline';
 import TakPattiPrint from '../../components/documents/TakPattiPrint';
 
 export default function ProcurementLots() {
-  const { lots, crops, centers, completeLot, processBulkPayment, payments } = useProcurement();
+  const { lots, crops, completeLot, processBulkPayment, payments, showToast } = useProcurement();
 
   const [selectedLot, setSelectedLot] = useState(null);
   const [selectedRows, setSelectedRows] = useState([]);
@@ -52,7 +46,7 @@ export default function ProcurementLots() {
       key: 'commodity',
       label: 'Commodity',
       sortable: true,
-      render: (val, row) => (
+      render: (val) => (
         <span className="text-xs font-semibold text-slate-800">{val}</span>
       )
     },
@@ -141,7 +135,7 @@ export default function ProcurementLots() {
       processBulkPayment(pIds);
       setSelectedRows([]);
     } else {
-      alert('Selected lots do not have pending payment records yet.');
+      showToast('Selected lots do not have pending payment records yet.', 'warning');
     }
   };
 

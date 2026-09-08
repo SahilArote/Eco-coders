@@ -1,14 +1,6 @@
-﻿import React, { useState } from 'react';
+import { useState } from 'react';
 import {
   Scale,
-  CheckCircle2,
-  Printer,
-  RotateCcw,
-  ArrowRight,
-  ShieldCheck,
-  Building2,
-  Clock,
-  Sparkles,
   Calculator
 } from 'lucide-react';
 import { useProcurement } from '../../context/ProcurementContext';
@@ -16,14 +8,14 @@ import StatusBadge from '../../components/common/StatusBadge';
 import WeighmentSlipPrint from '../../components/documents/WeighmentSlipPrint';
 
 export default function Weighbridge() {
-  const { lots, tokens, recordWeighment } = useProcurement();
+  const { lots, recordWeighment } = useProcurement();
 
   // Selected Lot for Weighment (Default LOT-2026-001)
   const [selectedLotId, setSelectedLotId] = useState('LOT-2026-001');
   const [grossWeight, setGrossWeight] = useState(4850);
   const [tareWeight, setTareWeight] = useState(1620);
   const [slipNo, setSlipNo] = useState('WB-PN-2026-4412');
-  const [scaleId, setScaleId] = useState('WB-SCALE-02 (Avery Weigh-Tronix 50T)');
+  const scaleId = 'WB-SCALE-02 (Avery Weigh-Tronix 50T)';
 
   const [printSlipLot, setPrintSlipLot] = useState(null);
 

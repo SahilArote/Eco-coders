@@ -1,25 +1,16 @@
-﻿import React, { useState } from 'react';
+import { useState } from 'react';
 import {
   QrCode,
-  Ticket,
-  Clock,
-  MapPin,
-  Users2,
-  Calendar,
   Sparkles,
-  CheckCircle2,
-  AlertCircle,
   Truck,
-  ArrowRight,
-  ShieldCheck,
-  RefreshCw
+  ShieldCheck
 } from 'lucide-react';
 import { useProcurement } from '../../context/ProcurementContext';
 import StatusBadge from '../../components/common/StatusBadge';
 import Timeline from '../../components/common/Timeline';
 
 export default function DigitalTokens() {
-  const { tokens, lots, counters } = useProcurement();
+  const { tokens, lots, counters, showToast } = useProcurement();
 
   // Selected Token: default A105
   const [selectedTokenNumber, setSelectedTokenNumber] = useState('A105');
@@ -237,8 +228,8 @@ export default function DigitalTokens() {
               </button>
 
               <button
-                onClick={() => alert(`SMS Token alert dispatched to +91 ${activeToken.farmerMobile}`)}
-                className="w-full flex items-center justify-center gap-2 rounded-xl bg-emerald-600 py-2.5 text-xs font-bold text-white hover:bg-emerald-700 shadow-xs"
+                onClick={() => showToast(`SMS Token alert dispatched to +91 ${activeToken.farmerMobile}`, 'info')}
+                className="w-full flex items-center justify-center gap-2 rounded-xl bg-emerald-600 py-2.5 text-xs font-bold text-white hover:bg-emerald-700 shadow-xs cursor-pointer"
               >
                 Resend Token SMS to Farmer
               </button>

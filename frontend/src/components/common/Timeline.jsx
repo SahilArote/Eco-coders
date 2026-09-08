@@ -1,5 +1,4 @@
-﻿import React from 'react';
-import { CheckCircle2, Clock, AlertCircle, CircleDot } from 'lucide-react';
+import { CheckCircle2, AlertCircle, CircleDot } from 'lucide-react';
 
 const STAGES = [
   { key: 'BOOKED', label: 'Slot Booked', desc: 'Appointment confirmed & Token generated' },
@@ -33,7 +32,6 @@ export default function Timeline({ currentStatus = 'BOOKED', history = [] }) {
         {STAGES.map((stage, idx) => {
           const isDone = !isRejected && idx <= currentIndex;
           const isCurrent = !isRejected && idx === currentIndex;
-          const isPending = !isDone && !isCurrent;
 
           // Find if there is a recorded history item
           const historyItem = history.find(h => h.stage?.toLowerCase().includes(stage.key.toLowerCase().split(' ')[0]));

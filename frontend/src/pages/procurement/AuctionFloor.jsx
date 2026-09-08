@@ -1,15 +1,10 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { 
   Gavel, 
   TrendingUp, 
-  Clock, 
   CheckCircle2, 
-  Building2, 
   Search, 
-  Filter, 
-  ArrowUpRight,
-  ShieldCheck,
-  AlertCircle
+  Plus
 } from 'lucide-react';
 import { useProcurement } from '../../context/ProcurementContext';
 import MetricCard from '../../components/common/MetricCard';
@@ -17,7 +12,7 @@ import StatusBadge from '../../components/common/StatusBadge';
 import DetailDrawer from '../../components/common/DetailDrawer';
 
 export default function AuctionFloor() {
-  const { auctions, currentCenter, placeBid, closeAuction, showToast } = useProcurement();
+  const { auctions, currentCenter, placeBid, closeAuction } = useProcurement();
 
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState('ALL');
@@ -186,15 +181,7 @@ export default function AuctionFloor() {
                       {auc.highestBidderName || 'Awaiting Bid'}
                     </td>
                     <td className="py-2.5">
-                      <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${
-                        auc.status === 'IN_AUCTION'
-                          ? 'bg-purple-100 text-purple-800 border border-purple-200 animate-pulse'
-                          : auc.status === 'SOLD'
-                          ? 'bg-emerald-100 text-emerald-800 border border-emerald-200'
-                          : 'bg-slate-100 text-slate-600'
-                      }`}>
-                        {auc.status}
-                      </span>
+                      <StatusBadge status={auc.status} />
                     </td>
                     <td className="py-2.5 text-right">
                       <button

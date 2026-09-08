@@ -1,4 +1,4 @@
-﻿import React, { useState } from 'react';
+import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import {
   Users,
@@ -9,10 +9,7 @@ import {
   IndianRupee,
   FlaskConical,
   CreditCard,
-  Clock,
-  CheckCircle2,
   Calendar,
-  AlertTriangle,
   ArrowRight,
   Plus,
   Printer,
@@ -37,8 +34,7 @@ export default function MainDashboard() {
     lots,
     payments,
     counters,
-    callNextToken,
-    currentRole
+    callNextToken
   } = useProcurement();
 
   const [selectedLot, setSelectedLot] = useState(null);

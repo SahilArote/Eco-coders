@@ -1,19 +1,13 @@
-﻿import React, { useState } from 'react';
+import { useState } from 'react';
 import {
-  MessageSquare,
-  AlertCircle,
-  CheckCircle2,
-  Clock,
-  Plus,
   Send,
-  Building2,
   LifeBuoy
 } from 'lucide-react';
 import { useProcurement } from '../../context/ProcurementContext';
 import StatusBadge from '../../components/common/StatusBadge';
 
 export default function GrievanceFeedback() {
-  const { grievances, submitGrievance, currentCenter } = useProcurement();
+  const { grievances, submitGrievance } = useProcurement();
 
   const [formData, setFormData] = useState({
     category: 'WEIGHMENT_DISPUTE',
@@ -156,7 +150,7 @@ export default function GrievanceFeedback() {
                     </div>
                     <h4 className="text-sm font-bold text-slate-800 mt-1">{grv.subject}</h4>
                   </div>
-                  <span className="text-tiny font-medium text-slate-400 shrink-0 font-mono">{grv.submittedAt}</span>
+                  <span className="text-tiny font-medium text-slate-400 shrink-0 font-mono">{grv.submittedAt || grv.createdAt}</span>
                 </div>
 
                 <p className="text-xs text-slate-600 leading-relaxed">

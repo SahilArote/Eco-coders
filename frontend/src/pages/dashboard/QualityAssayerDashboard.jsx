@@ -1,14 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { 
   FlaskConical, 
   CheckCircle2, 
-  XCircle, 
-  Clock, 
-  Search, 
-  AlertTriangle, 
-  FileText, 
-  Sliders, 
-  ShieldCheck 
+  XCircle,
+  Clock,
+  AlertTriangle
 } from 'lucide-react';
 import { useProcurement } from '../../context/ProcurementContext';
 import MetricCard from '../../components/common/MetricCard';
@@ -264,7 +260,7 @@ export default function QualityAssayerDashboard() {
                 <p className="text-[11px] text-slate-400">Click any inward lot to load into the testing bench.</p>
               </div>
               <span className="px-2.5 py-1 bg-slate-100 rounded-lg text-xs font-semibold text-slate-700">
-                Wheat Moisture Standard: $\le 12.0\%$
+                Wheat Moisture Standard: ≤ 12.0%
               </span>
             </div>
 

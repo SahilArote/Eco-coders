@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 
   Scale, 
@@ -10,11 +10,9 @@ import {
   ShieldCheck, 
   ArrowRight, 
   Lock, 
-  Mail, 
+  Mail,
   CheckCircle2,
-  Info,
-  Building2,
-  HelpCircle
+  Info
 } from 'lucide-react';
 import { useProcurement, APMC_ROLES } from '../../context/ProcurementContext';
 

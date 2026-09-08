@@ -1,15 +1,9 @@
-﻿import React, { useState } from 'react';
+import { useState } from 'react';
 import {
   Truck,
-  Plus,
   CheckCircle2,
-  Printer,
-  Search,
-  Filter,
-  ArrowRight,
-  Clock,
   ShieldCheck,
-  Building2
+  Printer
 } from 'lucide-react';
 import { useProcurement } from '../../context/ProcurementContext';
 import StatusBadge from '../../components/common/StatusBadge';
@@ -18,12 +12,10 @@ import { GatePassPrint } from '../../components/documents/GatePassPrint';
 export default function GateEntry() {
   const {
     currentCenter,
-    crops,
-    farmers,
     tokens,
     checkInGate,
     bookSlot,
-    showToast
+    crops
   } = useProcurement();
 
   const [formData, setFormData] = useState({

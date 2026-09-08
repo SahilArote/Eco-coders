@@ -1,4 +1,3 @@
-﻿import React, { useState } from 'react';
 import {
   BarChart,
   Bar,
@@ -9,19 +8,14 @@ import {
   ResponsiveContainer,
   PieChart,
   Pie,
-  Cell,
-  LineChart,
-  Line
+  Cell
 } from 'recharts';
-import { Package, TrendingUp, DollarSign, CheckCircle2, AlertTriangle, Layers, Filter } from 'lucide-react';
+import { Package, DollarSign, CheckCircle2, Layers } from 'lucide-react';
 import { useProcurement } from '../../context/ProcurementContext';
 import MetricCard from '../../components/common/MetricCard';
-import StatusBadge from '../../components/common/StatusBadge';
-
-const COLORS = ['#059669', '#10b981', '#f59e0b', '#3b82f6', '#8b5cf6', '#ec4899', '#64748b', '#14b8a6'];
 
 export default function ProcurementOverview() {
-  const { lots, crops, centers } = useProcurement();
+  const { lots, crops } = useProcurement();
 
   // Aggregate commodity quantities
   const commodityData = crops.map(crop => {
@@ -193,7 +187,7 @@ export default function ProcurementOverview() {
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100 text-xs">
-              {commodityData.map((item, idx) => (
+              {commodityData.map((item) => (
                 <tr key={item.name} className="hover:bg-slate-50">
                   <td className="px-4 py-3 font-semibold text-slate-900">
                     {item.name}

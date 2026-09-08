@@ -1,5 +1,5 @@
-﻿import React, { useState, useMemo } from 'react';
-import { Search, ChevronLeft, ChevronRight, ArrowUpDown, Download, Filter } from 'lucide-react';
+import { useState, useMemo } from 'react';
+import { Search, ChevronLeft, ChevronRight, ArrowUpDown } from 'lucide-react';
 
 export default function DataTable({
   columns = [],
@@ -93,6 +93,20 @@ export default function DataTable({
     return sortedData.slice(start, start + pageSize);
   }, [sortedData, currentPage, pageSize]);
 
+  // Sliding window pagination numbers
+  const pageNumbers = useMemo(() => {
+    let startPage = Math.max(1, currentPage - 2);
+    let endPage = Math.min(totalPages, startPage + 4);
+    if (endPage - startPage < 4) {
+      startPage = Math.max(1, endPage - 4);
+    }
+    const pages = [];
+    for (let p = startPage; p <= endPage; p++) {
+      pages.push(p);
+    }
+    return pages;
+  }, [currentPage, totalPages]);
+
   // Selection handlers
   const allCurrentPageSelected = paginatedData.length > 0 && paginatedData.every(item => selectedRows.includes(item[keyField]));
 
@@ -112,13 +126,14 @@ export default function DataTable({
     <div className="rounded-xl border border-slate-200/90 bg-white shadow-xs overflow-hidden">
       {/* Header Toolbar */}
       <div className="flex flex-col gap-3 p-4 sm:flex-row sm:items-center sm:justify-between border-b border-slate-100 bg-slate-50/50">
-        <div className="flex flex-1 items-center gap-2">
+        <div className="flex flex-1 items-center gap-2 flex-wrap">
           {searchable && (
             <div className="relative w-full max-w-sm">
               <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-slate-400" />
               <input
                 type="text"
                 value={searchTerm}
+                aria-label={searchPlaceholder}
                 onChange={(e) => {
                   setSearchTerm(e.target.value);
                   setCurrentPage(1);
@@ -133,6 +148,7 @@ export default function DataTable({
           {filters.map(filter => (
             <select
               key={filter.key}
+              aria-label={filter.label}
               value={activeFilters[filter.key] || 'ALL'}
               onChange={(e) => {
                 setActiveFilters(prev => ({ ...prev, [filter.key]: e.target.value }));
@@ -148,8 +164,8 @@ export default function DataTable({
           ))}
         </div>
 
-        <div className="flex items-center gap-2 text-xs text-slate-500">
-          <span>Showing <strong>{Math.min(sortedData.length, (currentPage - 1) * pageSize + 1)}</strong> - <strong>{Math.min(sortedData.length, currentPage * pageSize)}</strong> of <strong>{sortedData.length}</strong></span>
+        <div className="flex items-center gap-2 text-xs text-slate-500 shrink-0">
+          <span>Showing <strong>{sortedData.length > 0 ? (currentPage - 1) * pageSize + 1 : 0}</strong> - <strong>{Math.min(sortedData.length, currentPage * pageSize)}</strong> of <strong>{sortedData.length}</strong></span>
         </div>
       </div>
 
@@ -177,6 +193,7 @@ export default function DataTable({
                 <th className="w-10 px-4 py-3">
                   <input
                     type="checkbox"
+                    aria-label="Select all rows on page"
                     checked={allCurrentPageSelected}
                     onChange={handleToggleSelectAll}
                     className="size-4 rounded border-slate-300 text-emerald-600 focus:ring-emerald-500"
@@ -222,6 +239,7 @@ export default function DataTable({
                       <td className="px-4 py-3" onClick={(e) => e.stopPropagation()}>
                         <input
                           type="checkbox"
+                          aria-label={`Select row ${item[keyField] || idx}`}
                           checked={isSelected}
                           onChange={() => onSelectRow && onSelectRow(item[keyField])}
                           className="size-4 rounded border-slate-300 text-emerald-600 focus:ring-emerald-500"
@@ -251,7 +269,7 @@ export default function DataTable({
 
       {/* Pagination Footer */}
       {totalPages > 1 && (
-        <div className="flex items-center justify-between border-t border-slate-100 bg-slate-50/50 px-4 py-3 text-xs text-slate-500">
+        <div className="flex flex-col sm:flex-row items-center justify-between border-t border-slate-100 bg-slate-50/50 px-4 py-3 text-xs text-slate-500 gap-2">
           <div>
             Page <strong>{currentPage}</strong> of <strong>{totalPages}</strong>
           </div>
@@ -259,32 +277,32 @@ export default function DataTable({
             <button
               onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
               disabled={currentPage === 1}
-              className="flex items-center gap-1 rounded-lg border border-slate-200 bg-white px-2.5 py-1 text-slate-700 hover:bg-slate-100 disabled:opacity-40 disabled:cursor-not-allowed"
+              aria-label="Previous page"
+              className="flex items-center gap-1 rounded-lg border border-slate-200 bg-white px-2.5 py-1 text-slate-700 hover:bg-slate-100 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
             >
               <ChevronLeft className="size-3.5" /> Prev
             </button>
             <div className="flex gap-1">
-              {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
-                const p = i + 1;
-                return (
-                  <button
-                    key={p}
-                    onClick={() => setCurrentPage(p)}
-                    className={`size-7 rounded-lg text-xs font-medium ${
-                      currentPage === p 
-                        ? 'bg-emerald-600 text-white' 
-                        : 'border border-slate-200 bg-white text-slate-700 hover:bg-slate-100'
-                    }`}
-                  >
-                    {p}
-                  </button>
-                );
-              })}
+              {pageNumbers.map(p => (
+                <button
+                  key={p}
+                  onClick={() => setCurrentPage(p)}
+                  aria-label={`Go to page ${p}`}
+                  className={`size-7 rounded-lg text-xs font-medium cursor-pointer ${
+                    currentPage === p 
+                      ? 'bg-emerald-600 text-white shadow-xs' 
+                      : 'border border-slate-200 bg-white text-slate-700 hover:bg-slate-100'
+                  }`}
+                >
+                  {p}
+                </button>
+              ))}
             </div>
             <button
               onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
               disabled={currentPage === totalPages}
-              className="flex items-center gap-1 rounded-lg border border-slate-200 bg-white px-2.5 py-1 text-slate-700 hover:bg-slate-100 disabled:opacity-40 disabled:cursor-not-allowed"
+              aria-label="Next page"
+              className="flex items-center gap-1 rounded-lg border border-slate-200 bg-white px-2.5 py-1 text-slate-700 hover:bg-slate-100 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
             >
               Next <ChevronRight className="size-3.5" />
             </button>

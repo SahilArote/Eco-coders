@@ -1,19 +1,13 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { 
   Scale, 
   Truck, 
-  Printer, 
-  CheckCircle2, 
-  Clock, 
-  RefreshCw, 
-  Save, 
-  ShieldCheck, 
-  Sliders,
-  AlertCircle
+  CheckCircle2,
+  Clock,
+  Printer
 } from 'lucide-react';
 import { useProcurement } from '../../context/ProcurementContext';
 import MetricCard from '../../components/common/MetricCard';
-import StatusBadge from '../../components/common/StatusBadge';
 import WeighmentSlipPrint from '../../components/documents/WeighmentSlipPrint';
 
 export default function WeighbridgeDashboard() {

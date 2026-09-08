@@ -1,16 +1,11 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { 
   Building2, 
   Coins, 
   Sliders, 
   RefreshCw, 
   Save, 
-  CheckCircle2, 
-  ShieldCheck, 
   Clock, 
-  Scale, 
-  BellRing,
-  HelpCircle,
   Database
 } from 'lucide-react';
 import { useProcurement } from '../../context/ProcurementContext';
@@ -20,10 +15,9 @@ export default function SystemSettings() {
   const [activeTab, setActiveTab] = useState('centers'); // 'centers' | 'crops' | 'preferences' | 'system'
   const [resetConfirmOpen, setResetConfirmOpen] = useState(false);
 
-  // Center form state (local demo state)
-  const [centerList, setCenterList] = useState(centers);
-  // Crops form state
-  const [cropList, setCropList] = useState(crops);
+  // Center & Crops lists
+  const centerList = centers;
+  const cropList = crops;
   // System prefs
   const [preferences, setPreferences] = useState({
     autoRefreshQueue: true,
@@ -132,7 +126,7 @@ export default function SystemSettings() {
                         <span className="text-slate-400 block mb-1">Daily Capacity</span>
                         <input
                           type="number"
-                          defaultValue={center.capacity}
+                          defaultValue={center.totalCapacity || center.capacity || 350}
                           className="w-24 px-2.5 py-1.5 bg-white border border-slate-200 rounded-md font-medium text-slate-700 focus:outline-none focus:border-emerald-500"
                         />
                       </div>
@@ -140,7 +134,7 @@ export default function SystemSettings() {
                         <span className="text-slate-400 block mb-1">Active Counters</span>
                         <input
                           type="number"
-                          defaultValue={center.activeCounters}
+                          defaultValue={center.activeCounters || 6}
                           className="w-20 px-2.5 py-1.5 bg-white border border-slate-200 rounded-md font-medium text-slate-700 focus:outline-none focus:border-emerald-500"
                         />
                       </div>
@@ -148,7 +142,7 @@ export default function SystemSettings() {
                         <span className="text-slate-400 block mb-1">Operating Hours</span>
                         <div className="flex items-center gap-1 text-slate-700 font-medium py-1.5">
                           <Clock className="w-3.5 h-3.5 text-slate-400" />
-                          {center.operatingHours}
+                          {center.todaySchedule || center.operatingHours || '08:00 AM - 06:00 PM'}
                         </div>
                       </div>
                       <div>
@@ -202,15 +196,15 @@ export default function SystemSettings() {
                     <tr key={crop.id} className="hover:bg-slate-50/60">
                       <td className="p-3 font-semibold text-slate-800">
                         {crop.name}
-                        <span className="block font-mono text-[10px] text-slate-400">{crop.code}</span>
+                        <span className="block font-mono text-[10px] text-slate-400">{crop.code || crop.id}</span>
                       </td>
-                      <td className="p-3 text-slate-600 capitalize">{crop.category}</td>
+                      <td className="p-3 text-slate-600 capitalize">{crop.category || 'Cereal'}</td>
                       <td className="p-3">
                         <div className="flex items-center gap-1">
                           <span className="text-slate-400">₹</span>
                           <input
                             type="number"
-                            defaultValue={crop.mspRate}
+                            defaultValue={crop.msp || crop.mspRate || 2400}
                             className="w-24 px-2 py-1 bg-white border border-slate-200 rounded text-slate-800 font-semibold focus:outline-none focus:border-emerald-500"
                           />
                         </div>
@@ -219,7 +213,7 @@ export default function SystemSettings() {
                         <div className="flex items-center gap-1">
                           <input
                             type="number"
-                            defaultValue={crop.maxMoisture}
+                            defaultValue={crop.maxMoisturePercent || crop.maxMoisture || 12}
                             step="0.1"
                             className="w-16 px-2 py-1 bg-white border border-slate-200 rounded text-slate-800 font-semibold focus:outline-none focus:border-emerald-500"
                           />
@@ -230,14 +224,14 @@ export default function SystemSettings() {
                         <div className="flex items-center gap-1">
                           <input
                             type="number"
-                            defaultValue={crop.maxForeignMatter || 1.5}
+                            defaultValue={crop.maxForeignMatterPercent || crop.maxForeignMatter || 1.5}
                             step="0.1"
                             className="w-16 px-2 py-1 bg-white border border-slate-200 rounded text-slate-800 font-semibold focus:outline-none focus:border-emerald-500"
                           />
                           <span className="text-slate-400">%</span>
                         </div>
                       </td>
-                      <td className="p-3 text-slate-600">{crop.procurementWindow || 'Oct 2025 - Mar 2026'}</td>
+                      <td className="p-3 text-slate-600">{crop.season || crop.procurementWindow || 'Rabi 2026'}</td>
                       <td className="p-3">
                         <span className="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
                           Active

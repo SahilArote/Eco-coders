@@ -1,17 +1,11 @@
-﻿import React, { useState } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Calendar as CalendarIcon,
   Clock,
-  CheckCircle2,
-  AlertCircle,
   Plus,
-  Users,
   ChevronLeft,
-  ChevronRight,
-  Filter,
-  Sparkles,
-  Building2
+  ChevronRight
 } from 'lucide-react';
 import { useProcurement } from '../../context/ProcurementContext';
 
@@ -19,7 +13,7 @@ export default function ScheduleSlots() {
   const navigate = useNavigate();
   const { currentCenter, crops, bookSlot, farmers, selectedCenterId } = useProcurement();
 
-  const [selectedDate, setSelectedDate] = useState('2026-03-05');
+  const selectedDate = '2026-03-05';
   const [selectedCrop, setSelectedCrop] = useState('Wheat');
   const [bookingModalOpen, setBookingModalOpen] = useState(false);
   const [selectedSlotForBooking, setSelectedSlotForBooking] = useState(null);
@@ -53,7 +47,7 @@ export default function ScheduleSlots() {
 
   const handleSubmitBooking = (e) => {
     e.preventDefault();
-    const token = bookSlot({
+    bookSlot({
       centerId: selectedCenterId,
       commodity: formData.commodity,
       farmerId: formData.farmerId,

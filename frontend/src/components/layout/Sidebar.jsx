@@ -1,9 +1,7 @@
-import React from 'react';
 import { NavLink, Link } from 'react-router-dom';
 import {
   LayoutDashboard,
   Truck,
-  Ticket,
   Scale,
   FlaskConical,
   Package,
@@ -14,7 +12,6 @@ import {
   BarChart3,
   Settings,
   X,
-  FileCheck,
   CheckCircle2,
   Clock,
   Compass,

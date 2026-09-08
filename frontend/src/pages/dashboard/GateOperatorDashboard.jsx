@@ -1,16 +1,12 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { 
   Truck, 
-  Ticket, 
   CheckCircle2, 
-  Clock, 
-  Printer, 
   Plus, 
-  Search, 
-  AlertCircle, 
-  ArrowRight,
-  ShieldCheck,
-  UserCheck
+  Search,
+  Clock,
+  Ticket,
+  Printer
 } from 'lucide-react';
 import { useProcurement } from '../../context/ProcurementContext';
 import MetricCard from '../../components/common/MetricCard';
@@ -78,7 +74,6 @@ export default function GateOperatorDashboard() {
 
   const arrivedCount = tokens.filter(t => t.status === 'ARRIVED').length;
   const waitingCount = tokens.filter(t => t.status === 'WAITING' || t.status === 'BOOKED').length;
-  const completedToday = tokens.filter(t => t.status === 'COMPLETED').length;
 
   return (
     <div className="space-y-6">

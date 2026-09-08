@@ -1,7 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { 
-  ShieldCheck, 
   Users, 
   Truck, 
   Scale, 
@@ -11,16 +10,14 @@ import {
   CreditCard, 
   TrendingUp, 
   Building2, 
-  Calendar, 
-  Clock, 
-  CheckCircle2, 
-  ArrowRight,
+  Calendar,
+  Layers,
   Activity,
-  Layers
+  ShieldCheck,
+  ArrowRight
 } from 'lucide-react';
 import { useProcurement } from '../../context/ProcurementContext';
 import MetricCard from '../../components/common/MetricCard';
-import StatusBadge from '../../components/common/StatusBadge';
 
 export default function AdminDashboard() {
   const { 
@@ -30,7 +27,6 @@ export default function AdminDashboard() {
     lots, 
     auctions, 
     payments, 
-    counters,
     currentRole,
     setCurrentRole
   } = useProcurement();

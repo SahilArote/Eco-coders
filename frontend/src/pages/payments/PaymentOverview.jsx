@@ -1,14 +1,11 @@
-﻿import React, { useState } from 'react';
+import { useState } from 'react';
 import {
   CreditCard,
   CheckCircle2,
   Clock,
   AlertTriangle,
-  FileCheck,
-  ShieldCheck,
   Printer,
-  Eye,
-  ExternalLink
+  ShieldCheck
 } from 'lucide-react';
 import { useProcurement } from '../../context/ProcurementContext';
 import MetricCard from '../../components/common/MetricCard';

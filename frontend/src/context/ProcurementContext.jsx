@@ -1,4 +1,5 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+/* eslint-disable react-refresh/only-export-components */
+import { createContext, useContext, useState, useEffect } from 'react';
 import { mockCenters } from '../data/mockCenters';
 import { mockCrops } from '../data/mockCrops';
 import { mockFarmers } from '../data/mockFarmers';
@@ -112,7 +113,13 @@ export function ProcurementProvider({ children }) {
   const [payments, setPayments] = useState(mockPayments);
   const [auctions, setAuctions] = useState(mockAuctions);
   const [vehicles, setVehicles] = useState(mockVehicles);
-  const [notifications, setNotifications] = useState(mockNotifications);
+  const [notifications, setNotifications] = useState(() =>
+    mockNotifications.map(n => ({
+      ...n,
+      isRead: n.isRead ?? n.read ?? false,
+      read: n.read ?? n.isRead ?? false
+    }))
+  );
   const [grievances, setGrievances] = useState(mockGrievances);
 
   // Counters State
@@ -212,7 +219,7 @@ export function ProcurementProvider({ children }) {
     const matchedToken = tokens.find(t => t.tokenNumber === tokenNumber);
     if (matchedToken) {
       const newVeh = {
-        id: `VEH-${Date.now().toString().slice(-4)}`,
+        id: `VEH-${String(tokens.length + 100).padStart(4, '0')}`,
         vehicleNumber: vehicleNumber || matchedToken.vehicleNumber,
         vehicleType: 'Tractor Trolley',
         driverName: matchedToken.farmerName,
@@ -275,13 +282,23 @@ export function ProcurementProvider({ children }) {
     showToast(`Token ${nextToken.tokenNumber} called to Counter ${counterId}`);
   };
 
-  const skipToken = (tokenNumber) => {
+  const skipToken = (arg1, arg2) => {
+    const tokenNumber = typeof arg2 === 'string' ? arg2 : arg1;
+    const counterId = typeof arg2 === 'string' ? arg1 : null;
+
     setTokens(prev => prev.map(t => {
       if (t.tokenNumber === tokenNumber) {
         return { ...t, status: 'WAITING' };
       }
       return t;
     }));
+
+    if (counterId) {
+      setCounters(prev => prev.map(c => c.id === counterId ? { ...c, currentToken: null } : c));
+    } else {
+      setCounters(prev => prev.map(c => c.currentToken === tokenNumber ? { ...c, currentToken: null } : c));
+    }
+
     showToast(`Token ${tokenNumber} skipped & rescheduled`);
   };
 
@@ -474,13 +491,18 @@ export function ProcurementProvider({ children }) {
       message: notif.message,
       timestamp: 'Just now',
       isRead: false,
+      read: false,
       referenceId: notif.referenceId || null
     };
     setNotifications(prev => [newNotif, ...prev]);
   };
 
   const markNotificationAsRead = (id) => {
-    setNotifications(prev => prev.map(n => n.id === id ? { ...n, isRead: true } : n));
+    setNotifications(prev => prev.map(n => n.id === id ? { ...n, isRead: true, read: true } : n));
+  };
+
+  const markAllNotificationsRead = () => {
+    setNotifications(prev => prev.map(n => ({ ...n, isRead: true, read: true })));
   };
 
   const clearAllNotifications = () => {
@@ -493,7 +515,8 @@ export function ProcurementProvider({ children }) {
       id: 'GRV-' + Date.now().toString().slice(-5),
       ...grievanceData,
       status: 'SUBMITTED',
-      createdAt: 'Just now'
+      createdAt: 'Just now',
+      submittedAt: 'Just now'
     };
     setGrievances(prev => [newGrievance, ...prev]);
     showToast(`Grievance #${newGrievance.id} lodged with APMC Redressal`);
@@ -510,8 +533,11 @@ export function ProcurementProvider({ children }) {
     setPayments(mockPayments);
     setAuctions(mockAuctions);
     setVehicles(mockVehicles);
-    setNotifications(mockNotifications);
-    setGrievances(mockGrievances);
+    setNotifications(mockNotifications.map(n => ({
+      ...n,
+      isRead: n.isRead ?? n.read ?? false,
+      read: n.read ?? n.isRead ?? false
+    })));
     setCurrentRole('admin');
     setSelectedCenterId('C-01');
     localStorage.removeItem(STORAGE_PREFIX + 'role');
@@ -554,6 +580,7 @@ export function ProcurementProvider({ children }) {
         processBulkPayment,
         addNotification,
         markNotificationAsRead,
+        markAllNotificationsRead,
         clearAllNotifications,
         submitGrievance,
         resetDemoData

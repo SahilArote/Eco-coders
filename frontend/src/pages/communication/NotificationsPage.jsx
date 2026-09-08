@@ -1,12 +1,10 @@
-﻿import React, { useState } from 'react';
+import { useState } from 'react';
 import {
   Bell,
   CheckCircle2,
   AlertTriangle,
   Info,
-  Clock,
-  CheckCheck,
-  Filter
+  CheckCheck
 } from 'lucide-react';
 import { useProcurement } from '../../context/ProcurementContext';
 
@@ -70,44 +68,55 @@ export default function NotificationsPage() {
       </div>
 
       {/* Notifications List */}
-      <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-xs divide-y divide-slate-100">
-        {filtered.map(notif => {
-          const config = getCategoryConfig(notif.category);
-          const Icon = config.icon;
+      <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-xs">
+        {filtered.length === 0 ? (
+          <div className="text-center py-12">
+            <Bell className="w-10 h-10 text-slate-300 mx-auto mb-2" />
+            <h3 className="text-sm font-bold text-slate-800">No notifications found</h3>
+            <p className="text-xs text-slate-400 mt-1">There are no alerts matching the selected filter criteria.</p>
+          </div>
+        ) : (
+          <div className="divide-y divide-slate-100">
+            {filtered.map(notif => {
+              const isRead = Boolean(notif.isRead ?? notif.read);
+              const config = getCategoryConfig(notif.category);
+              const Icon = config.icon;
 
-          return (
-            <div
-              key={notif.id}
-              onClick={() => markNotificationAsRead(notif.id)}
-              className={`p-4 flex items-start gap-4 transition-colors cursor-pointer rounded-xl ${
-                notif.read ? 'hover:bg-slate-50' : 'bg-emerald-50/30 hover:bg-emerald-50/60'
-              }`}
-            >
-              <div className={`flex size-10 shrink-0 items-center justify-center rounded-xl border ${config.bg}`}>
-                <Icon className="size-5" />
-              </div>
+              return (
+                <div
+                  key={notif.id}
+                  onClick={() => markNotificationAsRead(notif.id)}
+                  className={`p-4 flex items-start gap-4 transition-colors cursor-pointer rounded-xl ${
+                    isRead ? 'hover:bg-slate-50' : 'bg-emerald-50/30 hover:bg-emerald-50/60'
+                  }`}
+                >
+                  <div className={`flex size-10 shrink-0 items-center justify-center rounded-xl border ${config.bg}`}>
+                    <Icon className="size-5" />
+                  </div>
 
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center justify-between gap-2">
-                  <h4 className={`text-sm font-bold ${notif.read ? 'text-slate-800' : 'text-slate-900'}`}>
-                    {notif.title}
-                  </h4>
-                  <span className="text-tiny font-medium text-slate-400 shrink-0">{notif.timestamp}</span>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center justify-between gap-2">
+                      <h4 className={`text-sm font-bold ${isRead ? 'text-slate-800' : 'text-slate-900'}`}>
+                        {notif.title}
+                      </h4>
+                      <span className="text-tiny font-medium text-slate-400 shrink-0">{notif.timestamp}</span>
+                    </div>
+
+                    <p className="mt-1 text-xs text-slate-600 leading-relaxed">
+                      {notif.message}
+                    </p>
+
+                    <div className="mt-2 flex items-center gap-3 text-tiny text-slate-400">
+                      {notif.center && <span>Mandi: <strong>{notif.center}</strong></span>}
+                      {notif.relatedToken && <span>Token: <strong className="font-mono text-emerald-700">{notif.relatedToken}</strong></span>}
+                      {notif.relatedLot && <span>Lot: <strong className="font-mono">{notif.relatedLot}</strong></span>}
+                    </div>
+                  </div>
                 </div>
-
-                <p className="mt-1 text-xs text-slate-600 leading-relaxed">
-                  {notif.message}
-                </p>
-
-                <div className="mt-2 flex items-center gap-3 text-tiny text-slate-400">
-                  <span>Mandi: <strong>{notif.center}</strong></span>
-                  {notif.relatedToken && <span>Token: <strong className="font-mono text-emerald-700">{notif.relatedToken}</strong></span>}
-                  {notif.relatedLot && <span>Lot: <strong className="font-mono">{notif.relatedLot}</strong></span>}
-                </div>
-              </div>
-            </div>
-          );
-        })}
+              );
+            })}
+          </div>
+        )}
       </div>
     </div>
   );

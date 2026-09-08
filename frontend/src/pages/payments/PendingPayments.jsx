@@ -1,13 +1,5 @@
-﻿import React, { useState } from 'react';
-import {
-  Clock,
-  CheckCircle2,
-  CreditCard,
-  AlertTriangle,
-  Building2,
-  ShieldCheck,
-  Printer
-} from 'lucide-react';
+import { useState } from 'react';
+import { CreditCard } from 'lucide-react';
 import { useProcurement } from '../../context/ProcurementContext';
 import DataTable from '../../components/common/DataTable';
 import StatusBadge from '../../components/common/StatusBadge';
@@ -18,7 +10,6 @@ export default function PendingPayments() {
 
   const [selectedRows, setSelectedRows] = useState([]);
   const [confirmModalOpen, setConfirmModalOpen] = useState(false);
-  const [processingId, setProcessingId] = useState(null);
 
   const pendingPayments = payments.filter(p => p.status === 'PENDING' || p.status === 'PROCESSING');
 

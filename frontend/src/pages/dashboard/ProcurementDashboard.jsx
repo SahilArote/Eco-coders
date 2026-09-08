@@ -1,14 +1,12 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { 
   PackageCheck, 
   CheckCircle2, 
-  Clock, 
   FileText, 
   Search, 
   TrendingUp, 
-  Building2,
   Printer,
-  ChevronRight,
+  Clock,
   Eye
 } from 'lucide-react';
 import { useProcurement } from '../../context/ProcurementContext';
@@ -18,7 +16,7 @@ import DetailDrawer from '../../components/common/DetailDrawer';
 import TakPattiPrint from '../../components/documents/TakPattiPrint';
 
 export default function ProcurementDashboard() {
-  const { lots, currentCenter, completeLot, showToast, currentRole, setCurrentRole } = useProcurement();
+  const { lots, currentCenter, completeLot, currentRole, setCurrentRole } = useProcurement();
 
   // Keep active role synced when visiting /dashboard/procurement
   useEffect(() => {

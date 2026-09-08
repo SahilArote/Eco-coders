@@ -1,17 +1,11 @@
-﻿import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import {
-  Building2,
   MapPin,
   Clock,
-  CheckCircle2,
-  AlertTriangle,
   Search,
-  Filter,
-  Users2,
-  Calendar,
   Phone,
-  Navigation,
+  Calendar,
   Compass,
   ArrowRight
 } from 'lucide-react';
@@ -19,7 +13,6 @@ import { useProcurement } from '../../context/ProcurementContext';
 import StatusBadge from '../../components/common/StatusBadge';
 
 export default function CenterDiscovery() {
-  const navigate = useNavigate();
   const { centers, selectedCenterId, setSelectedCenterId, crops, showToast } = useProcurement();
 
   const [searchTerm, setSearchTerm] = useState('');

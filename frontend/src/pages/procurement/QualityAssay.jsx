@@ -1,21 +1,17 @@
-﻿import React, { useState } from 'react';
+import { useState } from 'react';
 import {
   FlaskConical,
-  CheckCircle2,
   AlertTriangle,
   Award,
   Layers,
-  Search,
-  Filter,
-  Eye,
-  FileCheck2
+  Eye
 } from 'lucide-react';
 import { useProcurement } from '../../context/ProcurementContext';
 import StatusBadge from '../../components/common/StatusBadge';
 import DetailDrawer from '../../components/common/DetailDrawer';
 
 export default function QualityAssay() {
-  const { lots, recordQuality, showToast } = useProcurement();
+  const { lots, recordQuality } = useProcurement();
 
   const [selectedLotId, setSelectedLotId] = useState('LOT-2026-001');
   const [moisture, setMoisture] = useState(11.2);

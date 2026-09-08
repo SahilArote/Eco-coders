@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 
   Truck, 
@@ -16,7 +16,7 @@ import { useProcurement, APMC_ROLES } from '../../context/ProcurementContext';
 
 export default function RoleSwitcher() {
   const navigate = useNavigate();
-  const { currentRole, setCurrentRole, activeRoleObj, showToast } = useProcurement();
+  const { currentRole, setCurrentRole, activeRoleObj } = useProcurement();
   const [isOpen, setIsOpen] = useState(false);
 
   const getRoleIcon = (roleId) => {

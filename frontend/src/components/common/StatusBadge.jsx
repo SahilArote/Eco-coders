@@ -1,5 +1,3 @@
-﻿import React from 'react';
-
 const STATUS_CONFIGS = {
   // Green / Success
   COMPLETED: { bg: 'bg-emerald-50 text-emerald-700 border-emerald-200/80', dot: 'bg-emerald-500', label: 'Completed' },
@@ -10,6 +8,7 @@ const STATUS_CONFIGS = {
   OPEN: { bg: 'bg-emerald-50 text-emerald-700 border-emerald-200/80', dot: 'bg-emerald-500', label: 'Open' },
   RESOLVED: { bg: 'bg-emerald-50 text-emerald-700 border-emerald-200/80', dot: 'bg-emerald-500', label: 'Resolved' },
   ACTIVE: { bg: 'bg-emerald-50 text-emerald-700 border-emerald-200/80', dot: 'bg-emerald-500', label: 'Active' },
+  SOLD: { bg: 'bg-emerald-50 text-emerald-700 border-emerald-200/80', dot: 'bg-emerald-500', label: 'Allotted & Sold' },
 
   // Amber / Warning & Progress
   PENDING: { bg: 'bg-amber-50 text-amber-700 border-amber-200/80', dot: 'bg-amber-500', label: 'Pending' },
@@ -18,13 +17,19 @@ const STATUS_CONFIGS = {
   'QUALITY CHECK': { bg: 'bg-amber-50 text-amber-700 border-amber-200/80', dot: 'bg-amber-500', label: 'Quality Check' },
   WEIGHMENT: { bg: 'bg-amber-50 text-amber-700 border-amber-200/80', dot: 'bg-amber-500', label: 'Weighment' },
   IN_REVIEW: { bg: 'bg-amber-50 text-amber-700 border-amber-200/80', dot: 'bg-amber-500', label: 'In Review' },
+  'IN REVIEW': { bg: 'bg-amber-50 text-amber-700 border-amber-200/80', dot: 'bg-amber-500', label: 'In Review' },
   BUSY: { bg: 'bg-amber-50 text-amber-700 border-amber-200/80', dot: 'bg-amber-500', label: 'Busy' },
   'PAYMENT PROCESSING': { bg: 'bg-amber-50 text-amber-700 border-amber-200/80', dot: 'bg-amber-500 animate-pulse', label: 'Payment Processing' },
+  INITIATED: { bg: 'bg-amber-50 text-amber-700 border-amber-200/80', dot: 'bg-amber-500', label: 'Initiated' },
+  SUBMITTED: { bg: 'bg-amber-50 text-amber-700 border-amber-200/80', dot: 'bg-amber-500', label: 'Submitted' },
 
   // Sky Blue / Info
   BOOKED: { bg: 'bg-sky-50 text-sky-700 border-sky-200/80', dot: 'bg-sky-500', label: 'Booked' },
   ARRIVED: { bg: 'bg-sky-50 text-sky-700 border-sky-200/80', dot: 'bg-sky-500', label: 'Arrived at Gate' },
+  'IN YARD': { bg: 'bg-sky-50 text-sky-700 border-sky-200/80', dot: 'bg-sky-500', label: 'In Yard' },
   'PAYMENT COMPLETED': { bg: 'bg-emerald-50 text-emerald-700 border-emerald-200/80', dot: 'bg-emerald-500', label: 'Payment Completed' },
+  'IN AUCTION': { bg: 'bg-purple-50 text-purple-700 border-purple-200/80', dot: 'bg-purple-500 animate-pulse', label: 'In Live Auction' },
+  UPCOMING: { bg: 'bg-sky-50 text-sky-700 border-sky-200/80', dot: 'bg-sky-500', label: 'Upcoming' },
 
   // Rose / Error & Rejection
   REJECTED: { bg: 'bg-rose-50 text-rose-700 border-rose-200/80', dot: 'bg-rose-500', label: 'Rejected' },
@@ -39,8 +44,9 @@ const STATUS_CONFIGS = {
 };
 
 export default function StatusBadge({ status, customLabel, size = 'sm', showDot = true, className = '' }) {
-  const normKey = (status || '').toUpperCase();
-  const config = STATUS_CONFIGS[normKey] || {
+  const rawKey = (status || '').toUpperCase().trim();
+  const spaceKey = rawKey.replace(/[_-]+/g, ' ');
+  const config = STATUS_CONFIGS[rawKey] || STATUS_CONFIGS[spaceKey] || {
     bg: 'bg-slate-100 text-slate-700 border-slate-200',
     dot: 'bg-slate-400',
     label: status || 'Unknown'

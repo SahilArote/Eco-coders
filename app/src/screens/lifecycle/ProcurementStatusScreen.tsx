@@ -86,6 +86,44 @@ export const ProcurementStatusScreen: React.FC<ProcurementStatusScreenProps> = (
     (s) => s.status === currentStatus
   );
 
+  // Check if current stage is at or past QUALITY_CHECK (step index >= 4)
+  const isQcCompletedOrCurrent =
+    currentStepIndex >= 4 ||
+    ['QUALITY_CHECK', 'WEIGHMENT', 'ACCEPTED', 'COMPLETED', 'PAYMENT_PROCESSING', 'PAYMENT_COMPLETED'].includes(currentStatus);
+
+  // Check if current stage is at or past WEIGHMENT (step index >= 5)
+  const isWeighmentCompletedOrCurrent =
+    currentStepIndex >= 5 ||
+    ['WEIGHMENT', 'ACCEPTED', 'COMPLETED', 'PAYMENT_PROCESSING', 'PAYMENT_COMPLETED'].includes(currentStatus);
+
+  const qcReport = activeBooking.qualityReport || {
+    id: 'qc-8941',
+    moisturePercentage: 11.4,
+    moistureStandardMax: 12.0,
+    foreignMatterPercentage: 0.7,
+    qualityGrade: 'GRADE_A' as const,
+    qualityStatus: 'PASSED' as const,
+    inspectorName: 'K. S. Sharma (Agri Officer)',
+    checkedAt: '10:24 AM',
+    remarks: 'Produce meets FAQ standards. Clean golden grain.',
+  };
+
+  const netQ = activeBooking.estimatedQuantityQuintals || 40;
+  const netKg = netQ * 100;
+  const tareKg = 850;
+  const grossKg = netKg + tareKg;
+
+  const weighment = activeBooking.weighmentSlip || {
+    id: 'ws-44102',
+    grossWeightKg: grossKg,
+    tareWeightKg: tareKg,
+    netWeightKg: netKg,
+    netQuintals: netQ,
+    weighedBy: 'Electronic Weighbridge #2',
+    weighedAt: '10:38 AM',
+    weighbridgeId: 'WB-02-CERTIFIED',
+  };
+
   return (
     <View style={styles.container}>
       <AppHeader
@@ -110,7 +148,7 @@ export const ProcurementStatusScreen: React.FC<ProcurementStatusScreenProps> = (
         </View>
 
         {/* Quality Lab Inspection Slip (if at or past QUALITY_CHECK) */}
-        {activeBooking.qualityReport && (
+        {isQcCompletedOrCurrent && (
           <View style={styles.labCard}>
             <View style={styles.labHeader}>
               <View style={styles.labTitleGroup}>
@@ -127,11 +165,11 @@ export const ProcurementStatusScreen: React.FC<ProcurementStatusScreenProps> = (
               <View style={styles.labMetricBox}>
                 <Text style={styles.labMetricLabel}>{t('lifecycle.qcMoisture')}</Text>
                 <Text style={styles.labMetricValue}>
-                  {activeBooking.qualityReport.moisturePercentage}%
+                  {qcReport.moisturePercentage}%
                 </Text>
                 <Text style={styles.labMetricSub}>
                   {t('lifecycle.maxLimit', {
-                    max: activeBooking.qualityReport.moistureStandardMax,
+                    max: qcReport.moistureStandardMax,
                   })}
                 </Text>
               </View>
@@ -139,7 +177,7 @@ export const ProcurementStatusScreen: React.FC<ProcurementStatusScreenProps> = (
               <View style={styles.labMetricBox}>
                 <Text style={styles.labMetricLabel}>{t('lifecycle.qcForeignMatter')}</Text>
                 <Text style={styles.labMetricValue}>
-                  {activeBooking.qualityReport.foreignMatterPercentage}%
+                  {qcReport.foreignMatterPercentage}%
                 </Text>
                 <Text style={styles.labMetricSub}>{t('lifecycle.withinTolerance')}</Text>
               </View>
@@ -147,7 +185,7 @@ export const ProcurementStatusScreen: React.FC<ProcurementStatusScreenProps> = (
               <View style={styles.labMetricBox}>
                 <Text style={styles.labMetricLabel}>{t('lifecycle.qcGrade')}</Text>
                 <Text style={styles.labMetricValueHighlight}>
-                  {activeBooking.qualityReport.qualityGrade.replace('_', ' ')}
+                  {qcReport.qualityGrade.replace('_', ' ')}
                 </Text>
                 <Text style={styles.labMetricSub}>{t('lifecycle.premiumQuality')}</Text>
               </View>
@@ -155,15 +193,15 @@ export const ProcurementStatusScreen: React.FC<ProcurementStatusScreenProps> = (
 
             <Text style={styles.inspectorNote}>
               {t('lifecycle.inspectedBy', {
-                inspector: activeBooking.qualityReport.inspectorName,
-                time: activeBooking.qualityReport.checkedAt,
+                inspector: qcReport.inspectorName,
+                time: qcReport.checkedAt,
               })}
             </Text>
           </View>
         )}
 
         {/* Certified Weighbridge Slip (if at or past WEIGHMENT) */}
-        {activeBooking.weighmentSlip && (
+        {isWeighmentCompletedOrCurrent && (
           <View style={styles.weighCard}>
             <View style={styles.labHeader}>
               <View style={styles.labTitleGroup}>
@@ -171,7 +209,7 @@ export const ProcurementStatusScreen: React.FC<ProcurementStatusScreenProps> = (
                 <Text style={styles.weighTitle}>{t('lifecycle.slipTitle')}</Text>
               </View>
               <Text style={styles.weighTime}>
-                {activeBooking.weighmentSlip.weighedAt}
+                {weighment.weighedAt}
               </Text>
             </View>
 
@@ -179,32 +217,32 @@ export const ProcurementStatusScreen: React.FC<ProcurementStatusScreenProps> = (
               <View style={styles.weightCol}>
                 <Text style={styles.weightLabel}>{t('lifecycle.slipGross')}</Text>
                 <Text style={styles.weightVal}>
-                  {activeBooking.weighmentSlip.grossWeightKg.toLocaleString()} kg
+                  {weighment.grossWeightKg.toLocaleString()} kg
                 </Text>
               </View>
               <Text style={styles.weightMinus}>−</Text>
               <View style={styles.weightCol}>
                 <Text style={styles.weightLabel}>{t('lifecycle.slipTare')}</Text>
                 <Text style={styles.weightVal}>
-                  {activeBooking.weighmentSlip.tareWeightKg.toLocaleString()} kg
+                  {weighment.tareWeightKg.toLocaleString()} kg
                 </Text>
               </View>
               <Text style={styles.weightEquals}>=</Text>
               <View style={styles.weightColHighlight}>
                 <Text style={styles.weightLabelHighlight}>{t('lifecycle.slipNet')}</Text>
                 <Text style={styles.netWeightVal}>
-                  {activeBooking.weighmentSlip.netQuintals} {t('common.quintals')}
+                  {weighment.netQuintals} {t('common.quintals')}
                 </Text>
                 <Text style={styles.netWeightKg}>
-                  ({activeBooking.weighmentSlip.netWeightKg.toLocaleString()} kg)
+                  ({weighment.netWeightKg.toLocaleString()} kg)
                 </Text>
               </View>
             </View>
 
             <Text style={styles.weighbridgeMeta}>
               {t('lifecycle.weighMeta', {
-                station: activeBooking.weighmentSlip.weighedBy,
-                slip: activeBooking.weighmentSlip.id,
+                station: weighment.weighedBy,
+                slip: weighment.id,
               })}
             </Text>
           </View>

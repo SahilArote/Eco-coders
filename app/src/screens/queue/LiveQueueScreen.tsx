@@ -203,7 +203,7 @@ export const LiveQueueScreen: React.FC<LiveQueueScreenProps> = ({
         {/* ----------------- HACKATHON LIVE DEMO CONTROL BAR ----------------- */}
         <View style={styles.demoBar}>
           <View style={styles.demoBarHeader}>
-            <Ionicons name="hardware-chip-outline" size={16} color={COLORS.accentDark} />
+            <Ionicons name="hardware-chip-outline" size={14} color={COLORS.accentDark} />
             <Text style={styles.demoBarTitle}>{t('queue.simToolsTitle')}</Text>
           </View>
           <Text style={styles.demoBarSubtitle}>
@@ -215,7 +215,7 @@ export const LiveQueueScreen: React.FC<LiveQueueScreenProps> = ({
             onPress={advanceQueue}
             activeOpacity={0.8}
           >
-            <Ionicons name="volume-high-outline" size={18} color={COLORS.textInverse} />
+            <Ionicons name="volume-high-outline" size={14} color={COLORS.textInverse} />
             <Text style={styles.demoBtnText}>
               {t('queue.simBtnCallNext', {
                 current: queueState.currentToken,
@@ -229,7 +229,7 @@ export const LiveQueueScreen: React.FC<LiveQueueScreenProps> = ({
             onPress={advanceProcurementStage}
             activeOpacity={0.8}
           >
-            <Ionicons name="play-forward-outline" size={18} color={COLORS.primary} />
+            <Ionicons name="play-forward-outline" size={14} color={COLORS.primary} />
             <Text style={styles.demoSecondaryBtnText}>
               {t('queue.simBtnAdvanceStage')}
             </Text>
@@ -477,44 +477,44 @@ const styles = StyleSheet.create({
   },
   demoBar: {
     backgroundColor: '#F8FAFC',
-    borderRadius: RADIUS.xl,
-    padding: SPACING.lg,
-    borderWidth: 1.5,
+    borderRadius: RADIUS.lg,
+    padding: SPACING.md,
+    borderWidth: 1,
     borderColor: '#E2E8F0',
-    marginBottom: SPACING.xxl,
+    marginBottom: SPACING.xl,
   },
   demoBarHeader: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 6,
+    gap: 4,
   },
   demoBarTitle: {
-    fontSize: 12,
-    fontWeight: '800',
+    fontSize: 11,
+    fontWeight: '700',
     color: COLORS.accentDark,
     letterSpacing: 0.5,
   },
   demoBarSubtitle: {
-    fontSize: 11,
+    fontSize: 10,
     color: COLORS.textSecondary,
-    marginTop: 4,
-    marginBottom: SPACING.md,
-    lineHeight: 15,
+    marginTop: 2,
+    marginBottom: SPACING.sm,
+    lineHeight: 14,
   },
   demoBtn: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: COLORS.primary,
-    paddingVertical: 12,
-    paddingHorizontal: SPACING.md,
-    borderRadius: RADIUS.md,
-    gap: 8,
-    marginBottom: SPACING.sm,
+    paddingVertical: 7,
+    paddingHorizontal: SPACING.sm,
+    borderRadius: RADIUS.sm,
+    gap: 6,
+    marginBottom: 6,
   },
   demoBtnText: {
-    fontSize: 13,
-    fontWeight: '700',
+    fontSize: 11,
+    fontWeight: '600',
     color: COLORS.textInverse,
   },
   demoSecondaryBtn: {
@@ -522,16 +522,16 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: COLORS.surface,
-    borderWidth: 1.5,
+    borderWidth: 1,
     borderColor: COLORS.primary,
-    paddingVertical: 12,
-    paddingHorizontal: SPACING.md,
-    borderRadius: RADIUS.md,
-    gap: 8,
+    paddingVertical: 6,
+    paddingHorizontal: SPACING.sm,
+    borderRadius: RADIUS.sm,
+    gap: 6,
   },
   demoSecondaryBtnText: {
-    fontSize: 13,
-    fontWeight: '700',
+    fontSize: 11,
+    fontWeight: '600',
     color: COLORS.primary,
   },
 });

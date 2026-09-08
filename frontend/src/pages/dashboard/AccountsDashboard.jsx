@@ -1,15 +1,12 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { 
   CreditCard, 
   CheckCircle2, 
   Clock, 
   Printer, 
   Search, 
-  ShieldCheck, 
-  Building2, 
-  ArrowUpRight,
   TrendingUp,
-  AlertCircle
+  ShieldCheck
 } from 'lucide-react';
 import { useProcurement } from '../../context/ProcurementContext';
 import MetricCard from '../../components/common/MetricCard';
@@ -18,7 +15,7 @@ import ConfirmationModal from '../../components/common/ConfirmationModal';
 import PaymentVoucherPrint from '../../components/documents/PaymentVoucherPrint';
 
 export default function AccountsDashboard() {
-  const { payments, currentCenter, processSinglePayment, processBulkPayment, showToast, currentRole, setCurrentRole } = useProcurement();
+  const { payments, currentCenter, processSinglePayment, processBulkPayment, currentRole, setCurrentRole } = useProcurement();
 
   // Keep active role synced when visiting /dashboard/accounts
   useEffect(() => {

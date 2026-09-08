@@ -1,7 +1,7 @@
 export const en = {
   common: {
-    appName: 'KISAN e-PROCURE',
-    portalSubtitle: 'Kisan e-Setu Portal',
+    appName: 'KRAYA SUTRA',
+    portalSubtitle: 'Kraya Sutra Portal',
     govDepartment: 'MINISTRY OF CONSUMER AFFAIRS, FOOD & PUBLIC DISTRIBUTION',
     govDepartmentSub: 'Department of Consumer Affairs (DoCA) • Smart India Initiative',
     officialBadge: 'OFFICIAL',
@@ -105,7 +105,7 @@ export const en = {
   },
 
   home: {
-    greetingSub: 'Kisan e-Setu Portal',
+    greetingSub: 'Kraya Sutra Portal',
     greetingName: 'Ram Ram, {{name}}',
     activeToken: 'ACTIVE TOKEN',
     currentlyServing: 'Currently Serving',
@@ -211,7 +211,7 @@ export const en = {
     qrScanHint: 'Scan QR at Mandi Entry Gate to confirm physical arrival',
     trackRadarBtn: 'Track in Live Queue Radar',
     viewSlipBtn: 'View Full Procurement Inspection Slip',
-    shareMessage: 'Kisan e-Setu Token Pass: {{token}}\nCenter: {{center}}\nCrop: {{crop}}\nSlot: {{slot}}\nFarmer: {{farmer}}',
+    shareMessage: 'Kraya Sutra Token Pass: {{token}}\nCenter: {{center}}\nCrop: {{crop}}\nSlot: {{slot}}\nFarmer: {{farmer}}',
   },
 
   queue: {

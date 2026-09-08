@@ -1,24 +1,28 @@
-﻿import React, { useState } from 'react';
+import { useState } from 'react';
 import {
   FileText,
   Scale,
   Receipt,
   Award,
   FileCheck,
-  Printer,
-  Download,
-  Building2
+  Printer
 } from 'lucide-react';
 import { useProcurement } from '../../context/ProcurementContext';
 import TakPattiPrint from '../../components/documents/TakPattiPrint';
 import WeighmentSlipPrint from '../../components/documents/WeighmentSlipPrint';
 import { GatePassPrint, PaymentVoucherPrint } from '../../components/documents/GatePassPrint';
 
-export default function DocumentCenter() {
-  const { lots, tokens, payments, currentCenter } = useProcurement();
+export default function DocumentCenter({ defaultTab = 'tak-patti' }) {
+  const { lots, tokens, payments } = useProcurement();
 
-  const [activeDocType, setActiveDocType] = useState('tak-patti');
+  const [activeDocType, setActiveDocType] = useState(defaultTab);
+  const [prevDefaultTab, setPrevDefaultTab] = useState(defaultTab);
   const [selectedLotId, setSelectedLotId] = useState('LOT-2026-001');
+
+  if (defaultTab !== prevDefaultTab) {
+    setPrevDefaultTab(defaultTab);
+    setActiveDocType(defaultTab);
+  }
 
   const selectedLot = lots.find(l => l.id === selectedLotId) || lots[0];
   const selectedToken = tokens.find(t => t.tokenNumber === selectedLot?.tokenNumber) || tokens[0];

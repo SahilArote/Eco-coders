@@ -678,8 +678,6 @@ export const useAppStore = create<AppState>((set, get) => ({
       'QUALITY_CHECK',
       'WEIGHMENT',
       'ACCEPTED',
-      'COMPLETED',
-      'PAYMENT_PROCESSING',
       'PAYMENT_COMPLETED',
     ];
 
@@ -691,18 +689,75 @@ export const useAppStore = create<AppState>((set, get) => ({
           ? STAGES[currentIndex + 1]
           : STAGES[0];
 
+      const crop = state.crops.find((c) => c.id === state.activeBooking?.cropId) || state.crops[0];
+      const mspRate = crop.mspRatePerQuintal;
+      const quantityQuintals = state.activeBooking.estimatedQuantityQuintals || 40;
+      const netAmount = quantityQuintals * mspRate;
+
+      // Populate qualityReport when reaching QUALITY_CHECK or later
+      let qualityReport = state.activeBooking.qualityReport;
+      if (
+        !qualityReport &&
+        ['QUALITY_CHECK', 'WEIGHMENT', 'ACCEPTED', 'PAYMENT_COMPLETED'].includes(nextStage)
+      ) {
+        qualityReport = {
+          id: 'qc-8941',
+          moisturePercentage: 11.4,
+          moistureStandardMax: 12.0,
+          foreignMatterPercentage: 0.7,
+          qualityGrade: 'GRADE_A',
+          qualityStatus: 'PASSED',
+          inspectorName: 'K. S. Sharma (Agri Officer)',
+          checkedAt: '10:24 AM',
+          remarks: 'Produce meets FAQ standards. Clean golden grain.',
+        };
+      }
+
+      // Populate weighmentSlip when reaching WEIGHMENT or later
+      let weighmentSlip = state.activeBooking.weighmentSlip;
+      if (
+        !weighmentSlip &&
+        ['WEIGHMENT', 'ACCEPTED', 'PAYMENT_COMPLETED'].includes(nextStage)
+      ) {
+        const netKg = quantityQuintals * 100;
+        const tareKg = 850;
+        weighmentSlip = {
+          id: 'ws-44102',
+          grossWeightKg: netKg + tareKg,
+          tareWeightKg: tareKg,
+          netWeightKg: netKg,
+          netQuintals: quantityQuintals,
+          weighedBy: 'Electronic Weighbridge #2',
+          weighedAt: '10:38 AM',
+          weighbridgeId: 'WB-02-CERTIFIED',
+        };
+      }
+
+      // Populate paymentDetails when reaching ACCEPTED or PAYMENT_COMPLETED
+      let paymentDetails = state.activeBooking.paymentDetails;
+      if (['ACCEPTED', 'PAYMENT_COMPLETED'].includes(nextStage)) {
+        paymentDetails = {
+          id: paymentDetails?.id || 'pay-77401',
+          netAmount,
+          mspRate,
+          quantityQuintals,
+          currency: 'INR',
+          status: nextStage === 'PAYMENT_COMPLETED' ? 'COMPLETED' : 'INITIATED',
+          bankName: state.bankDetails?.bankName || paymentDetails?.bankName || 'State Bank of India',
+          accountMasked: state.bankDetails?.accountNumberMasked || paymentDetails?.accountMasked || '•••• •••• •••• 4819',
+          dbtReferenceNumber: paymentDetails?.dbtReferenceNumber || 'DBT-PFMS-MH-2026-0914820',
+          initiatedAt: paymentDetails?.initiatedAt || '10:45 AM',
+          completedAt: nextStage === 'PAYMENT_COMPLETED' ? '11:15 AM' : undefined,
+        };
+      }
+
       return {
         activeBooking: {
           ...state.activeBooking,
           status: nextStage,
-          paymentDetails:
-            nextStage === 'PAYMENT_COMPLETED' && state.activeBooking.paymentDetails
-              ? {
-                  ...state.activeBooking.paymentDetails,
-                  status: 'COMPLETED',
-                  completedAt: 'Today, 11:15 AM',
-                }
-              : state.activeBooking.paymentDetails,
+          qualityReport,
+          weighmentSlip,
+          paymentDetails,
         },
         notifications: [
           {

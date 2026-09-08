@@ -2,8 +2,8 @@ import { TranslationSchema } from './en';
 
 export const hi: TranslationSchema = {
   common: {
-    appName: 'किसान ई-प्रोक्योर',
-    portalSubtitle: 'किसान ई-सेतू पोर्टल',
+    appName: 'क्रय सूत्र',
+    portalSubtitle: 'क्रय सूत्र पोर्टल',
     govDepartment: 'उपभोक्ता मामले, खाद्य और सार्वजनिक वितरण मंत्रालय',
     govDepartmentSub: 'उपभोक्ता मामले विभाग (DoCA) • स्मार्ट इंडिया पहल',
     officialBadge: 'सरकारी',
@@ -107,7 +107,7 @@ export const hi: TranslationSchema = {
   },
 
   home: {
-    greetingSub: 'किसान ई-सेतू पोर्टल',
+    greetingSub: 'क्रय सूत्र पोर्टल',
     greetingName: 'राम राम, {{name}} जी',
     activeToken: 'सक्रिय टोकन',
     currentlyServing: 'वर्तमान सेवा टोकन',
@@ -213,7 +213,7 @@ export const hi: TranslationSchema = {
     qrScanHint: 'मंडी में अपनी उपस्थिति दर्ज कराने के लिए गेट पर क्यूआर कोड स्कैन करें',
     trackRadarBtn: 'लाइव कतार रडार में देखें',
     viewSlipBtn: 'खरीद व तुलाई पावती देखें',
-    shareMessage: 'किसान ई-सेतू टोकन पास: {{token}}\nकेंद्र: {{center}}\nफसल: {{crop}}\nस्लॉट: {{slot}}\nकिसान: {{farmer}}',
+    shareMessage: 'क्रय सूत्र टोकन पास: {{token}}\nकेंद्र: {{center}}\nफसल: {{crop}}\nस्लॉट: {{slot}}\nकिसान: {{farmer}}',
   },
 
   queue: {

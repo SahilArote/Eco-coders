@@ -1,5 +1,3 @@
-﻿import React from 'react';
-
 export function LoadingState({ count = 3, message = 'Loading procurement data...' }) {
   return (
     <div className="space-y-4 p-6">

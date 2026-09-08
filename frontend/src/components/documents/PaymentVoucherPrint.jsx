@@ -1,4 +1,3 @@
-import React from 'react';
 import { Printer } from 'lucide-react';
 
 export function GatePassPrint({ lot, token }) {

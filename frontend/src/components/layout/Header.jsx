@@ -1,15 +1,10 @@
-import React, { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { 
   Menu, 
-  Search, 
   Bell, 
   MapPin, 
-  CheckCircle2, 
   ChevronDown, 
   Check, 
-  X, 
-  AlertTriangle, 
-  ExternalLink,
   LogOut
 } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
@@ -25,7 +20,6 @@ export default function Header({ onMenuClick }) {
     setSelectedCenterId,
     notifications,
     markNotificationAsRead,
-    currentRole,
     activeRoleObj
   } = useProcurement();
 
@@ -34,7 +28,7 @@ export default function Header({ onMenuClick }) {
   const notifRef = useRef(null);
   const centerRef = useRef(null);
 
-  const unreadCount = notifications.filter(n => !n.isRead).length;
+  const unreadCount = notifications.filter(n => !(n.isRead ?? n.read)).length;
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -156,25 +150,34 @@ export default function Header({ onMenuClick }) {
               </div>
 
               <div className="divide-y divide-slate-100 max-h-80 overflow-y-auto custom-scrollbar my-2">
-                {notifications.slice(0, 5).map(n => (
-                  <div
-                    key={n.id}
-                    onClick={() => markNotificationAsRead(n.id)}
-                    className={`py-2.5 px-2 rounded-lg cursor-pointer transition-colors ${
-                      n.isRead ? 'hover:bg-slate-50' : 'bg-emerald-50/40 hover:bg-emerald-50'
-                    }`}
-                  >
-                    <div className="flex items-start justify-between gap-2">
-                      <span className={`text-xs font-semibold ${n.isRead ? 'text-slate-700' : 'text-slate-900'}`}>
-                        {n.title}
-                      </span>
-                      <span className="text-[10px] text-slate-400 shrink-0">{n.timestamp}</span>
-                    </div>
-                    <p className="text-[11px] text-slate-500 mt-1 leading-relaxed">
-                      {n.message}
-                    </p>
+                {notifications.length === 0 ? (
+                  <div className="text-center py-6 text-xs text-slate-400">
+                    No notifications
                   </div>
-                ))}
+                ) : (
+                  notifications.slice(0, 5).map(n => {
+                    const isRead = Boolean(n.isRead ?? n.read);
+                    return (
+                      <div
+                        key={n.id}
+                        onClick={() => markNotificationAsRead(n.id)}
+                        className={`py-2.5 px-2 rounded-lg cursor-pointer transition-colors ${
+                          isRead ? 'hover:bg-slate-50' : 'bg-emerald-50/40 hover:bg-emerald-50'
+                        }`}
+                      >
+                        <div className="flex items-start justify-between gap-2">
+                          <span className={`text-xs font-semibold ${isRead ? 'text-slate-700' : 'text-slate-900'}`}>
+                            {n.title}
+                          </span>
+                          <span className="text-[10px] text-slate-400 shrink-0">{n.timestamp}</span>
+                        </div>
+                        <p className="text-[11px] text-slate-500 mt-1 leading-relaxed">
+                          {n.message}
+                        </p>
+                      </div>
+                    );
+                  })
+                )}
               </div>
             </div>
           )}
